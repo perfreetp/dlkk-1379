@@ -1,0 +1,136 @@
+@use '@/styles/variables.scss' as *;
+
+.goalCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+  cursor: pointer;
+  
+  &:active {
+    transform: scale(0.98);
+    box-shadow: $shadow-card-hover;
+  }
+  
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $spacing-md;
+    
+    .titleSection {
+      flex: 1;
+      margin-right: $spacing-md;
+      
+      .title {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: $color-text-primary;
+        @include text-ellipsis;
+        margin-bottom: $spacing-xs;
+      }
+      
+      .category {
+        @include text-ellipsis;
+      }
+    }
+    
+    .statusBadge {
+      flex-shrink: 0;
+    }
+  }
+  
+  .description {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    line-height: $line-height-normal;
+    @include text-ellipsis-multi(2);
+    margin-bottom: $spacing-lg;
+  }
+  
+  .progressSection {
+    margin-bottom: $spacing-lg;
+    
+    .progressHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-sm;
+      
+      .progressLabel {
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+      }
+      
+      .progressValue {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $color-primary;
+      }
+    }
+  }
+  
+  .metaSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: $spacing-md;
+    border-top: 1rpx solid $color-divider;
+    
+    .budgetSection {
+      display: flex;
+      align-items: center;
+      
+      .budgetLabel {
+        font-size: $font-size-xs;
+        color: $color-text-tertiary;
+        margin-right: $spacing-xs;
+      }
+      
+      .budgetValue {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $color-success;
+      }
+    }
+    
+    .membersSection {
+      display: flex;
+      align-items: center;
+      
+      .avatarGroup {
+        display: flex;
+        margin-right: $spacing-sm;
+        
+        .avatar {
+          width: 48rpx;
+          height: 48rpx;
+          border-radius: $radius-round;
+          border: 2rpx solid $color-bg-card;
+          margin-left: -12rpx;
+          
+          &:first-child {
+            margin-left: 0;
+          }
+        }
+      }
+      
+      .deadline {
+        font-size: $font-size-xs;
+        color: $color-text-tertiary;
+      }
+    }
+  }
+  
+  &.completed {
+    .goalCard {
+      opacity: 0.8;
+    }
+    
+    .progressValue {
+      color: $color-success;
+    }
+  }
+}

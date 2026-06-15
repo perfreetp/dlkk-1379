@@ -1,0 +1,171 @@
+@use '@/styles/compat.scss';
+@use '@/styles/variables.scss' as *;
+
+// 全局样式
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB',
+    sans-serif;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+  background: linear-gradient(180deg, #FFF0EC 0%, $color-bg-page 100%);
+  min-height: 100vh;
+}
+
+// 通用容器
+.container {
+  padding: 0 $page-padding;
+  padding-bottom: 40rpx;
+}
+
+// 卡片通用样式
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+// 渐变按钮
+.btnPrimary {
+  @include button-reset;
+  height: $button-height-md;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+  min-width: 160rpx;
+  
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+// 次要按钮
+.btnSecondary {
+  @include button-reset;
+  height: $button-height-md;
+  background: $color-bg-card;
+  color: $color-primary;
+  border: 2rpx solid $color-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+  min-width: 160rpx;
+  
+  &:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+}
+
+// 文字按钮
+.btnText {
+  @include button-reset;
+  height: $button-height-sm;
+  background: transparent;
+  color: $color-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+  
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+// 标签样式
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40rpx;
+  padding: 0 $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+  
+  &.tagPrimary {
+    background: rgba($color-primary, 0.1);
+    color: $color-primary;
+  }
+  
+  &.tagSuccess {
+    background: rgba($color-success, 0.1);
+    color: $color-success;
+  }
+  
+  &.tagWarning {
+    background: rgba($color-warning, 0.1);
+    color: $color-warning;
+  }
+  
+  &.tagError {
+    background: rgba($color-error, 0.1);
+    color: $color-error;
+  }
+  
+  &.tagReward {
+    background: rgba($color-reward, 0.15);
+    color: darken($color-reward, 10%);
+  }
+}
+
+// 空状态
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl * 2 0;
+  color: $color-text-tertiary;
+  
+  .emptyIcon {
+    font-size: 120rpx;
+    opacity: 0.3;
+    margin-bottom: $spacing-md;
+  }
+  
+  .emptyText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}
+
+// 分割线
+.divider {
+  height: 1rpx;
+  background: $color-divider;
+  margin: $spacing-lg 0;
+}
+
+// 进度条
+.progressBar {
+  width: 100%;
+  height: 12rpx;
+  background: $color-divider;
+  border-radius: $radius-round;
+  overflow: hidden;
+  
+  .progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+    border-radius: $radius-round;
+    transition: width $transition-slow;
+  }
+  
+  &.success .progressFill {
+    background: linear-gradient(90deg, $color-success 0%, lighten($color-success, 10%) 100%);
+  }
+  
+  &.warning .progressFill {
+    background: linear-gradient(90deg, $color-warning 0%, lighten($color-warning, 10%) 100%);
+  }
+}

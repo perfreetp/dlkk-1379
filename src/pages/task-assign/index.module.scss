@@ -1,0 +1,424 @@
+@use '@/styles/variables.scss' as *;
+
+.taskAssignPage {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-primary 0%, $color-bg-page 30%);
+  padding: 24rpx;
+  padding-bottom: 160rpx;
+}
+
+.goalHeader {
+  @extend %card;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.goalTitle {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 12rpx;
+}
+
+.goalMeta {
+  display: flex;
+  gap: 24rpx;
+  flex-wrap: wrap;
+}
+
+.goalMetaItem {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.goalMetaIcon {
+  font-size: 28rpx;
+}
+
+.formCard {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.sectionTitle {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.sectionIcon {
+  font-size: 36rpx;
+}
+
+.formGroup {
+  margin-bottom: 32rpx;
+}
+
+.formLabel {
+  font-size: 28rpx;
+  color: $color-text-primary;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.formLabelRequired::after {
+  content: ' *';
+  color: $color-error;
+}
+
+.input {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160rpx;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.dateInput {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.datePlaceholder {
+  color: $color-text-tertiary;
+}
+
+.prioritySection {
+  margin-bottom: 32rpx;
+}
+
+.priorityGrid {
+  display: flex;
+  gap: 20rpx;
+}
+
+.priorityItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 16rpx;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.priorityItemActiveLow {
+  background: rgba($color-success, 0.1);
+  border-color: $color-success;
+}
+
+.priorityItemActiveMedium {
+  background: rgba($color-warning, 0.1);
+  border-color: $color-warning;
+}
+
+.priorityItemActiveHigh {
+  background: rgba($color-error, 0.1);
+  border-color: $color-error;
+}
+
+.priorityIcon {
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.priorityLabel {
+  font-size: 26rpx;
+  color: $color-text-secondary;
+}
+
+.priorityLabelActiveLow {
+  color: $color-success;
+  font-weight: 500;
+}
+
+.priorityLabelActiveMedium {
+  color: $color-warning;
+  font-weight: 500;
+}
+
+.priorityLabelActiveHigh {
+  color: $color-error;
+  font-weight: 500;
+}
+
+.assigneeSection {
+  margin-bottom: 32rpx;
+}
+
+.assigneesList {
+  display: flex;
+  gap: 24rpx;
+  flex-wrap: wrap;
+}
+
+.assigneeItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.assigneeAvatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  border: 4rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.assigneeAvatarSelected {
+  border-color: $color-primary;
+}
+
+.assigneeName {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+}
+
+.assigneeNameSelected {
+  color: $color-primary;
+  font-weight: 500;
+}
+
+.checkIcon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32rpx;
+  height: 32rpx;
+  background: $color-primary;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20rpx;
+}
+
+.avatarWrapper {
+  position: relative;
+}
+
+.reminderSection {
+  margin-bottom: 32rpx;
+}
+
+.reminderOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.reminderOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.reminderOptionActive {
+  border-color: $color-primary;
+  background: rgba($color-primary, 0.05);
+}
+
+.reminderLabel {
+  font-size: 28rpx;
+  color: $color-text-primary;
+}
+
+.reminderRadio {
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid $color-border;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reminderRadioActive {
+  border-color: $color-primary;
+  background: $color-primary;
+}
+
+.reminderRadioCheck {
+  color: white;
+  font-size: 24rpx;
+}
+
+.existingTasksCard {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.existingTasksHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.existingTasksTitle {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: $color-text-primary;
+}
+
+.existingTaskCount {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+}
+
+.existingTaskItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  padding: 20rpx;
+  background: $color-bg-page;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.taskStatusDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-top: 8rpx;
+  flex-shrink: 0;
+}
+
+.statusPending {
+  background: $color-warning;
+}
+
+.statusInProgress {
+  background: $color-primary;
+}
+
+.statusCompleted {
+  background: $color-success;
+}
+
+.taskInfo {
+  flex: 1;
+}
+
+.taskTitle {
+  font-size: 28rpx;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+}
+
+.taskMeta {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.taskMetaItem {
+  font-size: 22rpx;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.taskAssigneeAvatar {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+}
+
+.conflictWarning {
+  background: rgba($color-warning, 0.1);
+  border: 2rpx solid $color-warning;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.conflictText {
+  font-size: 24rpx;
+  color: $color-warning;
+  flex: 1;
+}
+
+.conflictIcon {
+  font-size: 32rpx;
+}
+
+.bottomActions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx;
+  background: white;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 24rpx;
+}
+
+.actionBtn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  border: none;
+}
+
+.primary {
+  background: $color-primary;
+  color: white;
+}
+
+.secondary {
+  background: $color-bg-page;
+  color: $color-text-secondary;
+}

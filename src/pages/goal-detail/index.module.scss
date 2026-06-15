@@ -1,0 +1,602 @@
+@use '@/styles/variables.scss' as *;
+
+.goalDetailPage {
+  min-height: 100vh;
+  padding-bottom: 140rpx;
+  
+  .header {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    padding: $spacing-xl $page-padding $spacing-lg;
+    color: $color-text-white;
+    
+    .titleSection {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: $spacing-md;
+      
+      .title {
+        font-size: $font-size-xxl;
+        font-weight: $font-weight-bold;
+        flex: 1;
+        margin-right: $spacing-md;
+        @include text-ellipsis;
+      }
+      
+      .statusBadge {
+        flex-shrink: 0;
+      }
+    }
+    
+    .description {
+      font-size: $font-size-md;
+      opacity: 0.95;
+      line-height: $line-height-loose;
+      margin-bottom: $spacing-lg;
+    }
+    
+    .metaRow {
+      display: flex;
+      gap: $spacing-md;
+      margin-bottom: $spacing-md;
+      
+      .metaItem {
+        display: flex;
+        align-items: center;
+        font-size: $font-size-sm;
+        
+        .metaIcon {
+          margin-right: $spacing-xs;
+          font-size: $font-size-md;
+        }
+      }
+    }
+    
+    .progressSection {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      
+      .progressHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-sm;
+        
+        .progressLabel {
+          font-size: $font-size-sm;
+        }
+        
+        .progressValue {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+        }
+      }
+    }
+  }
+  
+  .content {
+    padding: 0 $page-padding;
+    padding-top: $spacing-lg;
+    
+    .tabs {
+      display: flex;
+      background: $color-bg-card;
+      border-radius: $radius-button;
+      padding: $spacing-xs;
+      margin-bottom: $spacing-lg;
+      box-shadow: $shadow-card;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      
+      .tabItem {
+        flex: 1;
+        height: 72rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        border-radius: $radius-button;
+        transition: all $transition-base;
+        
+        &.active {
+          background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+          color: $color-text-white;
+          font-weight: $font-weight-semibold;
+        }
+      }
+    }
+    
+    .section {
+      margin-bottom: $spacing-lg;
+      
+      .sectionHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        
+        .sectionTitle {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $color-text-primary;
+        }
+        
+        .sectionAction {
+          font-size: $font-size-sm;
+          color: $color-primary;
+        }
+      }
+    }
+    
+    .infoCard {
+      background: $color-bg-card;
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      box-shadow: $shadow-card;
+      
+      .infoRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-md 0;
+        
+        &:not(:last-child) {
+          border-bottom: 1rpx solid $color-divider;
+        }
+        
+        .infoLabel {
+          font-size: $font-size-sm;
+          color: $color-text-secondary;
+        }
+        
+        .infoValue {
+          font-size: $font-size-sm;
+          color: $color-text-primary;
+          font-weight: $font-weight-medium;
+        }
+        
+        .membersRow {
+          display: flex;
+          align-items: center;
+          
+          .avatarGroup {
+            display: flex;
+            margin-right: $spacing-sm;
+            
+            .avatar {
+              width: 48rpx;
+              height: 48rpx;
+              border-radius: $radius-round;
+              border: 2rpx solid $color-bg-card;
+              margin-left: -12rpx;
+              
+              &:first-child {
+                margin-left: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    .budgetCard {
+      background: $color-bg-card;
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      box-shadow: $shadow-card;
+      
+      .budgetHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        
+        .budgetTitle {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $color-text-primary;
+        }
+        
+        .addExpense {
+          font-size: $font-size-sm;
+          color: $color-primary;
+        }
+      }
+      
+      .budgetProgress {
+        display: flex;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        
+        .budgetAmount {
+          flex: 1;
+          
+          .spent {
+            font-size: $font-size-xl;
+            font-weight: $font-weight-bold;
+            color: $color-primary;
+          }
+          
+          .budgetLabel {
+            font-size: $font-size-xs;
+            color: $color-text-tertiary;
+          }
+        }
+        
+        .remaining {
+          text-align: right;
+          
+          .remainingAmount {
+            font-size: $font-size-xl;
+            font-weight: $font-weight-bold;
+            color: $color-success;
+          }
+          
+          .remainingLabel {
+            font-size: $font-size-xs;
+            color: $color-text-tertiary;
+          }
+        }
+      }
+      
+      .expenseList {
+        .expenseItem {
+          display: flex;
+          align-items: center;
+          padding: $spacing-md 0;
+          
+          &:not(:last-child) {
+            border-bottom: 1rpx solid $color-divider;
+          }
+          
+          .expenseIcon {
+            width: 56rpx;
+            height: 56rpx;
+            border-radius: $radius-md;
+            background: rgba($color-primary, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: $spacing-md;
+            font-size: 28rpx;
+          }
+          
+          .expenseInfo {
+            flex: 1;
+            
+            .expenseTitle {
+              font-size: $font-size-md;
+              color: $color-text-primary;
+              font-weight: $font-weight-medium;
+              margin-bottom: 4rpx;
+            }
+            
+            .expenseMeta {
+              font-size: $font-size-xs;
+              color: $color-text-tertiary;
+            }
+          }
+          
+          .expenseAmount {
+            font-size: $font-size-lg;
+            font-weight: $font-weight-semibold;
+            color: $color-primary;
+          }
+        }
+        
+        .emptyExpenses {
+          padding: $spacing-lg 0;
+          text-align: center;
+          
+          .emptyIcon {
+            font-size: 64rpx;
+            opacity: 0.3;
+            margin-bottom: $spacing-sm;
+          }
+          
+          .emptyText {
+            font-size: $font-size-sm;
+            color: $color-text-tertiary;
+          }
+        }
+      }
+    }
+    
+    .rewardsCard {
+      background: $color-bg-card;
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      box-shadow: $shadow-card;
+      
+      .rewardsHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        
+        .rewardsTitle {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $color-text-primary;
+        }
+        
+        .addReward {
+          font-size: $font-size-sm;
+          color: $color-reward;
+        }
+      }
+      
+      .rewardItem {
+        display: flex;
+        align-items: center;
+        padding: $spacing-md 0;
+        
+        &:not(:last-child) {
+          border-bottom: 1rpx solid $color-divider;
+        }
+        
+        .rewardIcon {
+          width: 64rpx;
+          height: 64rpx;
+          border-radius: $radius-round;
+          background: rgba($color-reward, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: $spacing-md;
+          font-size: 32rpx;
+          
+          &.achieved {
+            background: rgba($color-success, 0.15);
+          }
+        }
+        
+        .rewardInfo {
+          flex: 1;
+          
+          .rewardTitle {
+            font-size: $font-size-md;
+            color: $color-text-primary;
+            font-weight: $font-weight-medium;
+            margin-bottom: 4rpx;
+          }
+          
+          .rewardCondition {
+            font-size: $font-size-xs;
+            color: $color-text-tertiary;
+          }
+        }
+        
+        .rewardStatus {
+          @extend %tag;
+          
+          &.achieved {
+            @extend %tagSuccess;
+          }
+          
+          &.pending {
+            @extend %tagWarning;
+          }
+        }
+      }
+    }
+    
+    .commentsCard {
+      background: $color-bg-card;
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      box-shadow: $shadow-card;
+      
+      .commentsHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        
+        .commentsTitle {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $color-text-primary;
+        }
+      }
+      
+      .commentList {
+        .commentItem {
+          display: flex;
+          padding: $spacing-md 0;
+          
+          &:not(:last-child) {
+            border-bottom: 1rpx solid $color-divider;
+          }
+          
+          .avatar {
+            width: 56rpx;
+            height: 56rpx;
+            border-radius: $radius-round;
+            margin-right: $spacing-md;
+            flex-shrink: 0;
+          }
+          
+          .commentContent {
+            flex: 1;
+            
+            .commentHeader {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: $spacing-xs;
+              
+              .authorName {
+                font-size: $font-size-sm;
+                color: $color-text-primary;
+                font-weight: $font-weight-medium;
+              }
+              
+              .commentTime {
+                font-size: $font-size-xs;
+                color: $color-text-tertiary;
+              }
+            }
+            
+            .commentText {
+              font-size: $font-size-sm;
+              color: $color-text-secondary;
+              line-height: $line-height-normal;
+            }
+          }
+        }
+        
+        .emptyComments {
+          padding: $spacing-lg 0;
+          text-align: center;
+          
+          .emptyIcon {
+            font-size: 64rpx;
+            opacity: 0.3;
+            margin-bottom: $spacing-sm;
+          }
+          
+          .emptyText {
+            font-size: $font-size-sm;
+            color: $color-text-tertiary;
+          }
+        }
+      }
+      
+      .commentInput {
+        display: flex;
+        gap: $spacing-sm;
+        margin-top: $spacing-md;
+        padding-top: $spacing-md;
+        border-top: 1rpx solid $color-divider;
+        
+        .input {
+          flex: 1;
+          height: 72rpx;
+          background: $color-bg-hover;
+          border-radius: $radius-button;
+          padding: 0 $spacing-lg;
+          font-size: $font-size-sm;
+        }
+        
+        .sendButton {
+          @include button-reset;
+          height: 72rpx;
+          padding: 0 $spacing-lg;
+          background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+          color: $color-text-white;
+          border-radius: $radius-button;
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
+          
+          &:active {
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+    
+    .reviewCard {
+      background: linear-gradient(135deg, rgba($color-success, 0.1) 0%, rgba($color-success, 0.05) 100%);
+      border: 1rpx solid rgba($color-success, 0.3);
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      
+      .reviewHeader {
+        display: flex;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        
+        .reviewIcon {
+          font-size: 40rpx;
+          margin-right: $spacing-sm;
+        }
+        
+        .reviewTitle {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $color-success;
+        }
+      }
+      
+      .reviewSummary {
+        font-size: $font-size-md;
+        color: $color-text-primary;
+        line-height: $line-height-loose;
+        margin-bottom: $spacing-md;
+      }
+      
+      .reviewSection {
+        margin-bottom: $spacing-md;
+        
+        .sectionLabel {
+          font-size: $font-size-sm;
+          color: $color-text-secondary;
+          font-weight: $font-weight-medium;
+          margin-bottom: $spacing-sm;
+        }
+        
+        .highlights {
+          display: flex;
+          flex-wrap: wrap;
+          gap: $spacing-sm;
+          
+          .highlight {
+            @extend %tag;
+            @extend %tagSuccess;
+          }
+        }
+        
+        .improvements {
+          display: flex;
+          flex-wrap: wrap;
+          gap: $spacing-sm;
+          
+          .improvement {
+            @extend %tag;
+            @extend %tagWarning;
+          }
+        }
+      }
+    }
+  }
+  
+  .bottomActions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: $color-bg-card;
+    padding: $spacing-md $page-padding;
+    padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+    box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+    display: flex;
+    gap: $spacing-md;
+    
+    .actionBtn {
+      flex: 1;
+      @include button-reset;
+      height: $button-height-lg;
+      border-radius: $radius-button;
+      font-size: $font-size-md;
+      font-weight: $font-weight-medium;
+      
+      &.primary {
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+        color: $color-text-white;
+      }
+      
+      &.secondary {
+        background: $color-bg-hover;
+        color: $color-text-primary;
+      }
+      
+      &:active {
+        opacity: 0.9;
+      }
+    }
+  }
+}

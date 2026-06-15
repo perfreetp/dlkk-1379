@@ -1,0 +1,426 @@
+@use '@/styles/variables.scss' as *;
+
+.reviewPage {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-primary 0%, $color-bg-page 30%);
+  padding: 24rpx;
+  padding-bottom: 160rpx;
+}
+
+.goalSummaryCard {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.goalTitle {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 16rpx;
+}
+
+.goalStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.statItem {
+  text-align: center;
+  padding: 16rpx 8rpx;
+  background: $color-bg-page;
+  border-radius: 12rpx;
+}
+
+.statValue {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $color-primary;
+  margin-bottom: 4rpx;
+}
+
+.statLabel {
+  font-size: 22rpx;
+  color: $color-text-secondary;
+}
+
+.statsHighlight {
+  color: $color-success;
+}
+
+.statsWarning {
+  color: $color-warning;
+}
+
+.formCard {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.sectionTitle {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.sectionIcon {
+  font-size: 36rpx;
+}
+
+.formGroup {
+  margin-bottom: 32rpx;
+}
+
+.formLabel {
+  font-size: 28rpx;
+  color: $color-text-primary;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.formLabelRequired::after {
+  content: ' *';
+  color: $color-error;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 200rpx;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.tagsInputSection {
+  margin-bottom: 32rpx;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.tagItem {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+}
+
+.highlightTag {
+  background: rgba($color-success, 0.1);
+  color: $color-success;
+  border: 2rpx solid $color-success;
+}
+
+.improvementTag {
+  background: rgba($color-warning, 0.1);
+  color: $color-warning;
+  border: 2rpx solid $color-warning;
+}
+
+.tagRemove {
+  font-size: 24rpx;
+  cursor: pointer;
+}
+
+.tagInputRow {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.tagInput {
+  flex: 1;
+  height: 72rpx;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  border-radius: 36rpx;
+  padding: 0 24rpx;
+  font-size: 26rpx;
+  color: $color-text-primary;
+}
+
+.tagAddBtn {
+  padding: 0 32rpx;
+  height: 72rpx;
+  background: $color-primary;
+  color: white;
+  border-radius: 36rpx;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memberContributionCard {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.contributionList {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.contributionItem {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 20rpx;
+  background: $color-bg-page;
+  border-radius: 16rpx;
+}
+
+.rankBadge {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.rankGold {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.rankSilver {
+  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+}
+
+.rankBronze {
+  background: linear-gradient(135deg, #CD7F32, #8B4513);
+}
+
+.rankNormal {
+  background: $color-text-tertiary;
+}
+
+.memberAvatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.memberInfo {
+  flex: 1;
+}
+
+.memberName {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.memberStats {
+  font-size: 22rpx;
+  color: $color-text-secondary;
+}
+
+.memberScore {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $color-primary;
+}
+
+.rewardSection {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.rewardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.rewardItem {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 20rpx;
+  background: $color-bg-page;
+  border-radius: 16rpx;
+}
+
+.rewardIcon {
+  font-size: 40rpx;
+  width: 64rpx;
+  text-align: center;
+}
+
+.rewardInfo {
+  flex: 1;
+}
+
+.rewardTitle {
+  font-size: 28rpx;
+  color: $color-text-primary;
+  font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.rewardCondition {
+  font-size: 22rpx;
+  color: $color-text-secondary;
+}
+
+.rewardStatus {
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+
+.rewardAchieved {
+  background: rgba($color-success, 0.1);
+  color: $color-success;
+}
+
+.rewardPending {
+  background: rgba($color-warning, 0.1);
+  color: $color-warning;
+}
+
+.photosSection {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.photosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+
+.photoItem {
+  aspect-ratio: 1;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: $color-bg-page;
+}
+
+.photoImg {
+  width: 100%;
+  height: 100%;
+}
+
+.addPhotoBtn {
+  aspect-ratio: 1;
+  border: 2rpx dashed $color-border;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  color: $color-text-tertiary;
+}
+
+.addPhotoIcon {
+  font-size: 48rpx;
+}
+
+.addPhotoText {
+  font-size: 22rpx;
+}
+
+.existingReviewCard {
+  @extend %card;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.reviewSummary {
+  font-size: 28rpx;
+  color: $color-text-primary;
+  line-height: 1.8;
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background: $color-bg-page;
+  border-radius: 12rpx;
+}
+
+.reviewSection {
+  margin-bottom: 24rpx;
+}
+
+.reviewSectionLabel {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: $color-text-primary;
+  margin-bottom: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.reviewTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.reviewDate {
+  text-align: center;
+  font-size: 24rpx;
+  color: $color-text-tertiary;
+  margin-top: 16rpx;
+}
+
+.bottomActions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx;
+  background: white;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 24rpx;
+}
+
+.actionBtn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  border: none;
+}
+
+.primary {
+  background: $color-primary;
+  color: white;
+}
+
+.secondary {
+  background: $color-bg-page;
+  color: $color-text-secondary;
+}

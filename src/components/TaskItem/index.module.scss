@@ -1,0 +1,131 @@
+@use '@/styles/variables.scss' as *;
+
+.taskItem {
+  display: flex;
+  align-items: flex-start;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+  border: 1rpx solid transparent;
+  transition: all $transition-base;
+  
+  &:active {
+    background: $color-bg-hover;
+  }
+  
+  &.completed {
+    opacity: 0.7;
+    
+    .taskTitle {
+      text-decoration: line-through;
+      color: $color-text-tertiary;
+    }
+  }
+  
+  &.highPriority {
+    border-left: 6rpx solid $color-error;
+  }
+  
+  &.mediumPriority {
+    border-left: 6rpx solid $color-warning;
+  }
+  
+  &.lowPriority {
+    border-left: 6rpx solid $color-success;
+  }
+  
+  .checkbox {
+    width: 44rpx;
+    height: 44rpx;
+    border: 2rpx solid $color-border;
+    border-radius: $radius-sm;
+    margin-right: $spacing-md;
+    margin-top: 4rpx;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all $transition-base;
+    
+    &.checked {
+      background: $color-success;
+      border-color: $color-success;
+      
+      .checkIcon {
+        display: block;
+      }
+    }
+    
+    .checkIcon {
+      display: none;
+      color: $color-text-white;
+      font-size: 28rpx;
+      font-weight: bold;
+    }
+  }
+  
+  .taskContent {
+    flex: 1;
+    min-width: 0;
+    
+    .taskHeader {
+      display: flex;
+      align-items: center;
+      margin-bottom: $spacing-xs;
+      
+      .taskTitle {
+        font-size: $font-size-md;
+        font-weight: $font-weight-medium;
+        color: $color-text-primary;
+        @include text-ellipsis;
+        flex: 1;
+      }
+      
+      .priorityTag {
+        margin-left: $spacing-sm;
+        flex-shrink: 0;
+      }
+    }
+    
+    .taskDescription {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      @include text-ellipsis-multi(2);
+      margin-bottom: $spacing-sm;
+    }
+    
+    .taskMeta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      
+      .assignee {
+        display: flex;
+        align-items: center;
+        
+        .avatar {
+          width: 40rpx;
+          height: 40rpx;
+          border-radius: $radius-round;
+          margin-right: $spacing-xs;
+        }
+        
+        .assigneeName {
+          font-size: $font-size-xs;
+          color: $color-text-tertiary;
+        }
+      }
+      
+      .deadline {
+        font-size: $font-size-xs;
+        color: $color-text-tertiary;
+        
+        &.urgent {
+          color: $color-error;
+          font-weight: $font-weight-medium;
+        }
+      }
+    }
+  }
+}

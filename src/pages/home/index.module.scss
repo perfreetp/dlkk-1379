@@ -1,0 +1,165 @@
+@use '@/styles/variables.scss' as *;
+
+.homePage {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+  
+  .header {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    padding: $spacing-xl $page-padding $spacing-lg;
+    color: $color-text-white;
+    margin-bottom: -$spacing-lg;
+    
+    .welcomeSection {
+      margin-bottom: $spacing-lg;
+      
+      .greeting {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        margin-bottom: $spacing-xs;
+      }
+      
+      .date {
+        font-size: $font-size-sm;
+        opacity: 0.9;
+      }
+    }
+    
+    .statsGrid {
+      display: flex;
+      justify-content: space-between;
+      gap: $spacing-md;
+      
+      .statCard {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: $radius-lg;
+        padding: $spacing-md;
+        text-align: center;
+        backdrop-filter: blur(10rpx);
+        
+        .statValue {
+          font-size: $font-size-xxl;
+          font-weight: $font-weight-bold;
+          line-height: 1.2;
+          margin-bottom: $spacing-xs;
+        }
+        
+        .statLabel {
+          font-size: $font-size-xs;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+  
+  .content {
+    padding: 0 $page-padding;
+    
+    .quickActions {
+      display: flex;
+      justify-content: space-between;
+      gap: $spacing-md;
+      margin-bottom: $spacing-lg;
+      
+      .actionCard {
+        flex: 1;
+        background: $color-bg-card;
+        border-radius: $radius-lg;
+        padding: $spacing-lg $spacing-md;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: $shadow-card;
+        transition: all $transition-base;
+        
+        &:active {
+          transform: scale(0.96);
+        }
+        
+        .actionIcon {
+          width: 80rpx;
+          height: 80rpx;
+          border-radius: $radius-lg;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 40rpx;
+          margin-bottom: $spacing-sm;
+          
+          &.primary {
+            background: rgba($color-primary, 0.1);
+          }
+          
+          &.success {
+            background: rgba($color-success, 0.1);
+          }
+          
+          &.warning {
+            background: rgba($color-warning, 0.1);
+          }
+        }
+        
+        .actionText {
+          font-size: $font-size-sm;
+          color: $color-text-primary;
+          font-weight: $font-weight-medium;
+        }
+      }
+    }
+    
+    .sectionHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-md;
+      
+      .sectionTitle {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: $color-text-primary;
+      }
+      
+      .seeMore {
+        font-size: $font-size-sm;
+        color: $color-primary;
+      }
+    }
+    
+    .inProgressGoals {
+      .goalsList {
+        // 目标卡片样式由 GoalCard 组件提供
+      }
+    }
+    
+    .todayTasks {
+      margin-top: $spacing-lg;
+      
+      .tasksList {
+        background: $color-bg-card;
+        border-radius: $radius-lg;
+        padding: $spacing-md;
+        box-shadow: $shadow-card;
+      }
+      
+      .emptyState {
+        background: $color-bg-card;
+        border-radius: $radius-lg;
+        padding: $spacing-xl * 2;
+        text-align: center;
+        box-shadow: $shadow-card;
+        
+        .emptyIcon {
+          font-size: 80rpx;
+          opacity: 0.3;
+          margin-bottom: $spacing-md;
+        }
+        
+        .emptyText {
+          font-size: $font-size-md;
+          color: $color-text-tertiary;
+        }
+      }
+    }
+  }
+}

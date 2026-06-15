@@ -1,0 +1,243 @@
+@use '@/styles/variables.scss' as *;
+
+.statisticsPage {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+  
+  .header {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    padding: $spacing-xl $page-padding $spacing-lg;
+    color: $color-text-white;
+    
+    .title {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+      margin-bottom: $spacing-lg;
+    }
+    
+    .overviewGrid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-md;
+      
+      .overviewCard {
+        width: calc(50% - #{$spacing-sm});
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: $radius-lg;
+        padding: $spacing-lg;
+        backdrop-filter: blur(10rpx);
+        
+        .cardValue {
+          font-size: $font-size-xxl;
+          font-weight: $font-weight-bold;
+          line-height: 1.2;
+          margin-bottom: $spacing-xs;
+        }
+        
+        .cardLabel {
+          font-size: $font-size-xs;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+  
+  .content {
+    padding: 0 $page-padding;
+    padding-top: $spacing-lg;
+    
+    .section {
+      margin-bottom: $spacing-lg;
+      
+      .sectionHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        
+        .sectionTitle {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $color-text-primary;
+        }
+      }
+      
+      .rankingCard {
+        background: $color-bg-card;
+        border-radius: $radius-lg;
+        padding: $spacing-md;
+        box-shadow: $shadow-card;
+        
+        .rankItem {
+          display: flex;
+          align-items: center;
+          padding: $spacing-md 0;
+          
+          &:not(:last-child) {
+            border-bottom: 1rpx solid $color-divider;
+          }
+          
+          .rankNumber {
+            width: 48rpx;
+            height: 48rpx;
+            border-radius: $radius-round;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-semibold;
+            margin-right: $spacing-md;
+            
+            &.rank1 {
+              background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+              color: $color-text-white;
+            }
+            
+            &.rank2 {
+              background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%);
+              color: $color-text-white;
+            }
+            
+            &.rank3 {
+              background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+              color: $color-text-white;
+            }
+            
+            &.other {
+              background: $color-bg-hover;
+              color: $color-text-secondary;
+            }
+          }
+          
+          .avatar {
+            width: 72rpx;
+            height: 72rpx;
+            border-radius: $radius-round;
+            margin-right: $spacing-md;
+          }
+          
+          .memberInfo {
+            flex: 1;
+            
+            .memberName {
+              font-size: $font-size-md;
+              font-weight: $font-weight-medium;
+              color: $color-text-primary;
+              margin-bottom: $spacing-xs;
+            }
+            
+            .memberStats {
+              display: flex;
+              gap: $spacing-md;
+              
+              .stat {
+                font-size: $font-size-xs;
+                color: $color-text-tertiary;
+                
+                .statValue {
+                  color: $color-primary;
+                  font-weight: $font-weight-semibold;
+                  margin-right: 4rpx;
+                }
+              }
+            }
+          }
+          
+          .score {
+            text-align: right;
+            
+            .scoreValue {
+              font-size: $font-size-lg;
+              font-weight: $font-weight-bold;
+              color: $color-primary;
+            }
+            
+            .scoreLabel {
+              font-size: $font-size-xs;
+              color: $color-text-tertiary;
+            }
+          }
+        }
+      }
+      
+      .categoryStats {
+        .statsGrid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: $spacing-md;
+          
+          .statCard {
+            width: calc(50% - #{$spacing-sm});
+            background: $color-bg-card;
+            border-radius: $radius-lg;
+            padding: $spacing-lg;
+            box-shadow: $shadow-card;
+            
+            .categoryIcon {
+              width: 64rpx;
+              height: 64rpx;
+              border-radius: $radius-md;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 32rpx;
+              margin-bottom: $spacing-sm;
+            }
+            
+            .categoryName {
+              font-size: $font-size-sm;
+              color: $color-text-secondary;
+              margin-bottom: $spacing-xs;
+            }
+            
+            .categoryCount {
+              font-size: $font-size-xl;
+              font-weight: $font-weight-bold;
+              color: $color-text-primary;
+            }
+          }
+        }
+      }
+      
+      .progressChart {
+        background: $color-bg-card;
+        border-radius: $radius-lg;
+        padding: $spacing-lg;
+        box-shadow: $shadow-card;
+        
+        .chartTitle {
+          font-size: $font-size-md;
+          font-weight: $font-weight-medium;
+          color: $color-text-primary;
+          margin-bottom: $spacing-lg;
+        }
+        
+        .progressItem {
+          margin-bottom: $spacing-md;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+          
+          .progressHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: $spacing-xs;
+            
+            .progressLabel {
+              font-size: $font-size-sm;
+              color: $color-text-secondary;
+            }
+            
+            .progressValue {
+              font-size: $font-size-sm;
+              font-weight: $font-weight-semibold;
+              color: $color-primary;
+            }
+          }
+        }
+      }
+    }
+  }
+}
