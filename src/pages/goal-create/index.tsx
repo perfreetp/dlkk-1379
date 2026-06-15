@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
 import { memberAvatarById } from '@/data/mockData';
-import type { Goal, Task } from '@/types';
+import type { Goal, Task, MemberPermission, GoalPermission } from '@/types';
 
 interface TaskForm {
   id: string;
@@ -36,9 +36,16 @@ const priorities: Array<{ key: Task['priority']; label: string; class: string }>
 const GoalCreatePage: React.FC = () => {
   const router = useRouter();
   const editId = router.params.id as string | undefined;
-  
-  const { members, currentUserId, addGoal, updateGoal, getGoalById, checkDateConflict } = useGoalStore();
-  
+
+  const {
+    members,
+    currentUserId,
+    addGoal,
+    updateGoal,
+    getGoalById,
+    checkDateConflict
+  } = useGoalStore();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<Goal['category']>('travel');
@@ -47,13 +54,14 @@ const GoalCreatePage: React.FC = () => {
   const [deadline, setDeadline] = useState(dayjs().add(30, 'day').format('YYYY-MM-DD'));
   const [completionCriteria, setCompletionCriteria] = useState('');
   const [visibleMemberIds, setVisibleMemberIds] = useState<string[]>([currentUserId]);
+  const [memberPermissions, setMemberPermissions] = useState<MemberPermission[]>([]);
   const [tasks, setTasks] = useState<TaskForm[]>([]);
   const [goalConflict, setGoalConflict] = useState(false);
   const [startDateConflict, setStartDateConflict] = useState(false);
   const [taskConflicts, setTaskConflicts] = useState<Record<string, boolean>>({});
-  
+
   const isEdit = !!editId;
-  
+
   useEffect(() => {
     if (isEdit) {
       const goal = getGoalById(editId);
@@ -66,15 +74,18 @@ const GoalCreatePage: React.FC = () => {
         setDeadline(goal.deadline);
         setCompletionCriteria(goal.completionCriteria);
         setVisibleMemberIds(goal.visibleMemberIds);
+        setMemberPermissions(goal.memberPermissions || []);
         setTasks(goal.tasks.map(t => ({
           id: t.id,
           title: t.title,
           priority: t.priority,
           assigneeId: t.assigneeId,
           deadline: t.deadline || '',
-          remind: true
+          remind: t.remind !== false
         })));
       }
+    } else {
+      setMemberPermissions([{ memberId: currentUserId, permission: 'edit' }]);
     }
   }, [isEdit, editId, getGoalById]);
   
@@ -97,11 +108,28 @@ const GoalCreatePage: React.FC = () => {
   }, [tasks, checkDateConflict]);
   
   const handleToggleMember = (memberId: string) => {
-    setVisibleMemberIds(prev => 
-      prev.includes(memberId)
-        ? prev.filter(id => id !== memberId)
-        : [...prev, memberId]
-    );
+    setVisibleMemberIds(prev => {
+      const isIncluded = prev.includes(memberId);
+      if (isIncluded) {
+        setMemberPermissions(perms => perms.filter(p => p.memberId !== memberId));
+        return prev.filter(id => id !== memberId);
+      } else {
+        setMemberPermissions(perms => [...perms, { memberId, permission: (memberId === currentUserId ? 'edit' : 'view') as GoalPermission }]);
+        return [...prev, memberId];
+      }
+    });
+  };
+
+  const handleTogglePermission = (memberId: string) => {
+    setMemberPermissions(prev => prev.map(p =>
+      p.memberId === memberId
+        ? { ...p, permission: (p.permission === 'edit' ? 'view' : 'edit') as GoalPermission }
+        : p
+    ));
+  };
+
+  const getMemberPermission = (memberId: string): GoalPermission => {
+    return memberPermissions.find(p => p.memberId === memberId)?.permission || 'view';
   };
   
   const handleAddTask = () => {
@@ -169,6 +197,7 @@ const GoalCreatePage: React.FC = () => {
         deadline,
         completionCriteria: completionCriteria.trim(),
         visibleMemberIds,
+        memberPermissions,
         tasks: validTasks.map<Task>((t) => ({
           id: t.id,
           title: t.title.trim(),
@@ -177,10 +206,11 @@ const GoalCreatePage: React.FC = () => {
           status: 'pending',
           priority: t.priority,
           deadline: t.deadline || undefined,
+          remind: t.remind,
           createdAt: dayjs().toISOString()
         }))
       });
-      
+
       Taro.showToast({ title: '更新成功', icon: 'success' });
     } else {
       addGoal({
@@ -193,6 +223,7 @@ const GoalCreatePage: React.FC = () => {
         deadline,
         completionCriteria: completionCriteria.trim(),
         visibleMemberIds,
+        memberPermissions,
         createdBy: currentUserId,
         status: 'planning',
         progress: 0,
@@ -204,13 +235,14 @@ const GoalCreatePage: React.FC = () => {
           status: 'pending',
           priority: t.priority,
           deadline: t.deadline || undefined,
+          remind: t.remind,
           createdAt: dayjs().toISOString()
         })),
         expenses: [],
         comments: [],
         rewards: []
       });
-      
+
       Taro.showToast({ title: '创建成功', icon: 'success' });
     }
     
@@ -336,28 +368,47 @@ const GoalCreatePage: React.FC = () => {
         </Text>
         
         <View className={styles.formGroup}>
-          <Text className={styles.formLabel}>选择可见成员</Text>
+          <Text className={styles.formLabel}>选择成员及权限</Text>
           <View className={styles.membersList}>
-            {members.map(member => (
-              <View
-                key={member.id}
-                className={styles.memberItem}
-                onClick={() => handleToggleMember(member.id)}
-              >
-                <View className={styles.avatarWrapper}>
-                  <Image
-                    className={classnames(styles.memberAvatar, visibleMemberIds.includes(member.id) && styles.memberAvatarSelected)}
-                    src={memberAvatarById(member.id)}
-                    mode='aspectFill'
-                  />
-                  {visibleMemberIds.includes(member.id) && <Text className={styles.checkIcon}>✓</Text>}
+            {members.map(member => {
+              const isSelected = visibleMemberIds.includes(member.id);
+              const permission = getMemberPermission(member.id);
+              const isOwner = member.role === 'owner';
+              return (
+                <View
+                  key={member.id}
+                  className={styles.memberItem}
+                  onClick={() => !isOwner && handleToggleMember(member.id)}
+                >
+                  <View className={styles.avatarWrapper}>
+                    <Image
+                      className={classnames(styles.memberAvatar, isSelected && styles.memberAvatarSelected)}
+                      src={memberAvatarById(member.id)}
+                      mode='aspectFill'
+                    />
+                    {isSelected && <Text className={styles.checkIcon}>✓</Text>}
+                  </View>
+                  <Text className={classnames(styles.memberName, isSelected && styles.memberNameSelected)}>
+                    {member.name}
+                  </Text>
+                  {isSelected && !isOwner && (
+                    <View
+                      className={classnames(styles.permissionTag, permission === 'edit' && styles.permissionEdit)}
+                      onClick={(e) => { e.stopPropagation(); handleTogglePermission(member.id); }}
+                    >
+                      <Text>{permission === 'edit' ? '可编辑' : '只读'}</Text>
+                    </View>
+                  )}
+                  {isSelected && isOwner && (
+                    <View className={classnames(styles.permissionTag, styles.permissionOwner)}>
+                      <Text>管理员</Text>
+                    </View>
+                  )}
                 </View>
-                <Text className={classnames(styles.memberName, visibleMemberIds.includes(member.id) && styles.memberNameSelected)}>
-                  {member.name}
-                </Text>
-              </View>
-            ))}
+              );
+            })}
           </View>
+          <Text className={styles.permissionHint}>💡 管理员自动拥有所有权限；可编辑成员可修改任务、费用、奖励；只读成员只能查看</Text>
         </View>
       </View>
       

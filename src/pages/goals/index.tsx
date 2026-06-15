@@ -5,7 +5,6 @@ import classnames from 'classnames';
 import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
 import GoalCard from '@/components/GoalCard';
-import { categoryLabels, statusLabels } from '@/data/mockData';
 import type { GoalCategory, GoalStatus } from '@/types';
 
 const categories: Array<{ key: GoalCategory | 'all'; label: string }> = [

@@ -24,6 +24,12 @@ export const mockMembers: Member[] = [
     name: '小红',
     avatar: 'https://picsum.photos/id/1027/200/200',
     role: 'member'
+  },
+  {
+    id: '5',
+    name: '爷爷',
+    avatar: 'https://picsum.photos/id/1006/200/200',
+    role: 'viewer'
   }
 ];
 

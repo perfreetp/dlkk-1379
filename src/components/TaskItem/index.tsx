@@ -14,7 +14,7 @@ interface TaskItemProps {
   onClick?: () => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, goalId, onToggle, onClick }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, goalId: _goalId, onToggle, onClick }) => {
   const isCompleted = task.status === 'completed';
   const isUrgent = task.deadline && dayjs(task.deadline).diff(dayjs(), 'day') <= 3 && !isCompleted;
   

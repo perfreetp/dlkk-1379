@@ -1,8 +1,16 @@
+export type MemberRole = 'owner' | 'member' | 'viewer';
+export type GoalPermission = 'edit' | 'view';
+
 export interface Member {
   id: string;
   name: string;
   avatar: string;
-  role: 'owner' | 'member';
+  role: MemberRole;
+}
+
+export interface MemberPermission {
+  memberId: string;
+  permission: GoalPermission;
 }
 
 export interface Task {
@@ -13,6 +21,7 @@ export interface Task {
   status: 'pending' | 'in_progress' | 'completed';
   deadline?: string;
   priority: 'low' | 'medium' | 'high';
+  remind?: boolean;
   createdAt: string;
   completedAt?: string;
 }
@@ -63,6 +72,9 @@ export interface Schedule {
   goalId?: string;
   taskId?: string;
   conflict?: boolean;
+  read?: boolean;
+  remindEnabled?: boolean;
+  snoozeUntil?: string;
 }
 
 export interface Goal {
@@ -76,6 +88,7 @@ export interface Goal {
   startDate: string;
   completionCriteria: string;
   visibleMemberIds: string[];
+  memberPermissions?: MemberPermission[];
   createdBy: string;
   status: 'planning' | 'in_progress' | 'completed' | 'cancelled';
   progress: number;

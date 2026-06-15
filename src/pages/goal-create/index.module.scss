@@ -387,6 +387,33 @@
   display: block;
 }
 
+.permissionTag {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+  background: $color-bg-page;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+
+  &.permissionEdit {
+    background: rgba($color-primary, 0.1);
+    color: $color-primary;
+  }
+
+  &.permissionOwner {
+    background: rgba($color-success, 0.1);
+    color: $color-success;
+  }
+}
+
+.permissionHint {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+  display: block;
+  line-height: 1.5;
+}
+
 .taskDateRow {
   display: flex;
   align-items: center;

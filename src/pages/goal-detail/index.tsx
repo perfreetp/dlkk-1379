@@ -13,17 +13,21 @@ const GoalDetailPage: React.FC = () => {
   const router = useRouter();
   const goalId = router.params.id as string;
   
-  const { 
-    goals, 
+  const {
+    goals,
     currentUserId,
-    getGoalById, 
+    getGoalById,
     getMemberById,
     toggleTaskStatus,
+    toggleRewardAchieved,
     addComment,
     addReward,
     updateReward,
     deleteReward,
-    toggleRewardAchieved
+    canEditGoal,
+    canEditExpense,
+    canEditReward,
+    canEditReview
   } = useGoalStore();
   
   const [activeTab, setActiveTab] = useState<'tasks' | 'info' | 'expense' | 'reward' | 'comment'>('tasks');
@@ -35,6 +39,14 @@ const GoalDetailPage: React.FC = () => {
   const [rewardCondition, setRewardCondition] = useState('');
   const [rewardDescription, setRewardDescription] = useState('');
   
+  const handleToggleTask = (taskId: string) => {
+    if (!canEditGoal(goalId)) {
+      Taro.showToast({ title: '您没有编辑权限', icon: 'none' });
+      return;
+    }
+    toggleTaskStatus(goalId, taskId);
+  };
+
   const goal = useMemo(() => {
     return getGoalById(goalId);
   }, [goals, goalId]);
@@ -61,18 +73,30 @@ const GoalDetailPage: React.FC = () => {
   };
   
   const handleAddTask = () => {
+    if (!canEditGoal(goalId)) {
+      Taro.showToast({ title: '您没有编辑权限', icon: 'none' });
+      return;
+    }
     Taro.navigateTo({
       url: `/pages/task-assign/index?goalId=${goalId}`
     });
   };
-  
+
   const handleAddExpense = () => {
+    if (!canEditExpense(goalId)) {
+      Taro.showToast({ title: '您没有添加费用的权限', icon: 'none' });
+      return;
+    }
     Taro.navigateTo({
       url: `/pages/expense-record/index?goalId=${goalId}`
     });
   };
-  
+
   const handleAddReward = () => {
+    if (!canEditReward(goalId)) {
+      Taro.showToast({ title: '您没有编辑奖励的权限', icon: 'none' });
+      return;
+    }
     setEditingReward(null);
     setRewardTitle('');
     setRewardCondition('');
@@ -81,14 +105,22 @@ const GoalDetailPage: React.FC = () => {
   };
   
   const handleEditReward = (reward: Reward) => {
+    if (!canEditReward(goalId)) {
+      Taro.showToast({ title: '您没有编辑奖励的权限', icon: 'none' });
+      return;
+    }
     setEditingReward(reward);
     setRewardTitle(reward.title);
     setRewardCondition(reward.condition);
     setRewardDescription(reward.description || '');
     setRewardModalVisible(true);
   };
-  
+
   const handleDeleteReward = (rewardId: string) => {
+    if (!canEditReward(goalId)) {
+      Taro.showToast({ title: '您没有删除奖励的权限', icon: 'none' });
+      return;
+    }
     Taro.showModal({
       title: '确认删除',
       content: '确定要删除这个奖励吗？',
@@ -99,6 +131,14 @@ const GoalDetailPage: React.FC = () => {
         }
       }
     });
+  };
+
+  const handleToggleReward = (rewardId: string) => {
+    if (!canEditReward(goalId)) {
+      Taro.showToast({ title: '您没有操作奖励的权限', icon: 'none' });
+      return;
+    }
+    toggleRewardAchieved(goalId, rewardId);
   };
   
   const handleSaveReward = () => {
@@ -131,26 +171,29 @@ const GoalDetailPage: React.FC = () => {
     setRewardModalVisible(false);
   };
   
-  const handleSendComment = () => {
-    if (!commentText.trim()) return;
-    
+  const handleSubmitComment = () => {
+    if (!commentText.trim()) {
+      Taro.showToast({ title: '请输入评论内容', icon: 'none' });
+      return;
+    }
+
     addComment(goalId, {
       authorId: currentUserId,
       content: commentText.trim()
     });
-    
+
     setCommentText('');
     Taro.showToast({
       title: '评论成功',
       icon: 'success'
     });
   };
-  
-  const handleToggleReward = (rewardId: string) => {
-    toggleRewardAchieved(goalId, rewardId);
-  };
-  
+
   const handleCompleteGoal = () => {
+    if (!canEditReview(goalId)) {
+      Taro.showToast({ title: '您没有复盘权限', icon: 'none' });
+      return;
+    }
     Taro.showModal({
       title: '确认完成',
       content: '确定要标记这个目标为已完成吗？',
@@ -163,21 +206,17 @@ const GoalDetailPage: React.FC = () => {
       }
     });
   };
-  
+
   const handleEditGoal = () => {
+    if (!canEditGoal(goalId)) {
+      Taro.showToast({ title: '您没有编辑权限', icon: 'none' });
+      return;
+    }
     Taro.navigateTo({
       url: `/pages/goal-create/index?id=${goalId}`
     });
   };
-  
-  const _handleRemind = (memberId: string) => {
-    const member = getMemberById(memberId);
-    Taro.showToast({
-      title: `已提醒${member?.name}`,
-      icon: 'success'
-    });
-  };
-  
+
   if (!goal) {
     return (
       <View className={styles.goalDetailPage}>
@@ -260,7 +299,7 @@ const GoalDetailPage: React.FC = () => {
                   key={task.id}
                   task={task}
                   goalId={goal.id}
-                  onToggle={() => toggleTaskStatus(goal.id, task.id)}
+                  onToggle={() => handleToggleTask(task.id)}
                 />
               ))}
               
@@ -512,7 +551,7 @@ const GoalDetailPage: React.FC = () => {
                 />
                 <Button 
                   className={styles.sendButton}
-                  onClick={handleSendComment}
+                  onClick={handleSubmitComment}
                 >
                   发送
                 </Button>

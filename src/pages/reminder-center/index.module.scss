@@ -1,0 +1,283 @@
+@use '@/styles/variables.scss' as *;
+
+.reminderPage {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+  background: $color-bg-page;
+
+  .header {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    padding: $spacing-xl $page-padding $spacing-lg;
+    color: $color-text-white;
+
+    .headerTop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-md;
+
+      .headerTitle {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+      }
+
+      .markAllBtn {
+        font-size: $font-size-sm;
+        opacity: 0.9;
+        padding: $spacing-xs $spacing-sm;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: $radius-md;
+      }
+    }
+
+    .unreadSummary {
+      display: flex;
+      align-items: baseline;
+      gap: $spacing-xs;
+
+      .unreadCount {
+        font-size: 64rpx;
+        font-weight: $font-weight-bold;
+        line-height: 1;
+      }
+
+      .unreadLabel {
+        font-size: $font-size-sm;
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .filterBar {
+    display: flex;
+    background: $color-bg-card;
+    padding: $spacing-sm $page-padding;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: $shadow-card;
+
+    .filterItem {
+      flex: 1;
+      text-align: center;
+      padding: $spacing-sm 0;
+      position: relative;
+
+      .filterText {
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+      }
+    }
+
+    .filterItemActive {
+      .filterText {
+        color: $color-primary;
+        font-weight: $font-weight-semibold;
+      }
+    }
+  }
+
+  .reminderList {
+    padding: $spacing-md $page-padding;
+
+    .reminderItem {
+      background: $color-bg-card;
+      border-radius: $radius-lg;
+      margin-bottom: $spacing-md;
+      box-shadow: $shadow-card;
+      overflow: hidden;
+    }
+
+    .reminderRead {
+      opacity: 0.7;
+    }
+
+    .reminderConflict {
+      border-left: 6rpx solid $color-error;
+    }
+
+    .reminderMain {
+      display: flex;
+      align-items: flex-start;
+      padding: $spacing-md;
+    }
+
+    .typeIcon {
+      width: 64rpx;
+      height: 64rpx;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: $spacing-md;
+      flex-shrink: 0;
+      font-size: 32rpx;
+
+      &.deadline {
+        background: rgba($color-error, 0.1);
+      }
+
+      &.reminder {
+        background: rgba($color-warning, 0.1);
+      }
+
+      &.meeting {
+        background: rgba($color-info, 0.1);
+      }
+    }
+
+    .reminderContent {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reminderHeader {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-xs;
+    }
+
+    .reminderTitle {
+      font-size: $font-size-md;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .unreadDot {
+      width: 16rpx;
+      height: 16rpx;
+      border-radius: $radius-round;
+      background: $color-error;
+      flex-shrink: 0;
+    }
+
+    .reminderMeta {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-xs;
+    }
+
+    .reminderDate {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+    }
+
+    .typeTag {
+      font-size: $font-size-xs;
+      padding: 2rpx 12rpx;
+      border-radius: $radius-sm;
+
+      &.typeTag_deadline {
+        background: rgba($color-error, 0.1);
+        color: $color-error;
+      }
+
+      &.typeTag_reminder {
+        background: rgba($color-warning, 0.1);
+        color: $color-warning;
+      }
+
+      &.typeTag_meeting {
+        background: rgba($color-info, 0.1);
+        color: $color-info;
+      }
+    }
+
+    .reminderGoal {
+      font-size: $font-size-xs;
+      color: $color-primary;
+      background: rgba($color-primary, 0.1);
+      padding: 4rpx $spacing-sm;
+      border-radius: $radius-sm;
+      display: inline-block;
+      margin-bottom: $spacing-xs;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .reminderAssignee {
+      font-size: $font-size-xs;
+      color: $color-text-tertiary;
+    }
+
+    .conflictBadge {
+      margin-top: $spacing-xs;
+      display: inline-block;
+
+      Text {
+        font-size: $font-size-xs;
+        color: $color-error;
+        background: rgba($color-error, 0.1);
+        padding: 4rpx $spacing-sm;
+        border-radius: $radius-sm;
+      }
+    }
+
+    .reminderArrow {
+      font-size: 36rpx;
+      color: $color-text-tertiary;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .reminderActions {
+      display: flex;
+      border-top: 1rpx solid $color-border;
+      background: $color-bg-page;
+
+      .actionBtn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: $spacing-sm 0;
+        gap: 4rpx;
+
+        .actionIcon {
+          font-size: 28rpx;
+        }
+
+        .actionText {
+          font-size: $font-size-xs;
+          color: $color-text-secondary;
+        }
+
+        &:active {
+          background: rgba(0, 0, 0, 0.05);
+        }
+      }
+
+      .actionBtnActive {
+        .actionText {
+          color: $color-primary;
+        }
+      }
+    }
+  }
+
+  .emptyState {
+    padding: $spacing-xl * 2 $page-padding;
+    text-align: center;
+
+    .emptyIcon {
+      font-size: 120rpx;
+      opacity: 0.3;
+      margin-bottom: $spacing-md;
+      display: block;
+    }
+
+    .emptyText {
+      font-size: $font-size-md;
+      color: $color-text-tertiary;
+    }
+  }
+}

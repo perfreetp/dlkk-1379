@@ -9,11 +9,18 @@
     padding: $spacing-lg $page-padding;
     color: $color-text-white;
     
-    .monthSelector {
+    .headerTop {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: $spacing-md;
+    }
+
+    .monthSelector {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      flex: 1;
       
       .monthText {
         font-size: $font-size-xl;
@@ -29,6 +36,38 @@
         align-items: center;
         justify-content: center;
         font-size: $font-size-lg;
+      }
+    }
+
+    .reminderEntry {
+      position: relative;
+      width: 64rpx;
+      height: 64rpx;
+      border-radius: $radius-round;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .reminderIcon {
+        font-size: 32rpx;
+      }
+      
+      .reminderBadge {
+        position: absolute;
+        top: -4rpx;
+        right: -4rpx;
+        min-width: 32rpx;
+        height: 32rpx;
+        padding: 0 8rpx;
+        border-radius: 16rpx;
+        background: $color-error;
+        color: $color-text-white;
+        font-size: 20rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: $font-weight-bold;
       }
     }
     

@@ -8,12 +8,14 @@ import { useGoalStore } from '@/store/useGoalStore';
 import type { Schedule } from '@/types';
 
 const SchedulePage: React.FC = () => {
-  const { schedules, goals, members, getSchedulesByDate, getSchedulesFiltered } = useGoalStore();
+  const { schedules, goals, members, getSchedulesByDate, getSchedulesFiltered, getUnreadCount } = useGoalStore();
   const [currentMonth, setCurrentMonth] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [refreshing, setRefreshing] = useState(false);
   const [filterMemberId, setFilterMemberId] = useState('');
   const [filterGoalId, setFilterGoalId] = useState('');
+
+  const unreadCount = getUnreadCount();
   
   const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -154,10 +156,21 @@ const SchedulePage: React.FC = () => {
       onRefresherRefresh={handleRefresh}
     >
       <View className={styles.calendarHeader}>
-        <View className={styles.monthSelector}>
-          <View className={styles.navButton} onClick={handlePrevMonth}><Text>‹</Text></View>
-          <Text className={styles.monthText}>{currentMonth.format('YYYY年MM月')}</Text>
-          <View className={styles.navButton} onClick={handleNextMonth}><Text>›</Text></View>
+        <View className={styles.headerTop}>
+          <View className={styles.monthSelector}>
+            <View className={styles.navButton} onClick={handlePrevMonth}><Text>‹</Text></View>
+            <Text className={styles.monthText}>{currentMonth.format('YYYY年MM月')}</Text>
+            <View className={styles.navButton} onClick={handleNextMonth}><Text>›</Text></View>
+          </View>
+          <View
+            className={styles.reminderEntry}
+            onClick={() => Taro.navigateTo({ url: '/pages/reminder-center/index' })}
+          >
+            <Text className={styles.reminderIcon}>🔔</Text>
+            {unreadCount > 0 && (
+              <View className={styles.reminderBadge}><Text>{unreadCount > 99 ? '99+' : unreadCount}</Text></View>
+            )}
+          </View>
         </View>
         
         <View className={styles.filterBar}>

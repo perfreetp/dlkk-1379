@@ -9,7 +9,8 @@ export default defineAppConfig({
     'pages/goal-create/index',
     'pages/task-assign/index',
     'pages/review/index',
-    'pages/expense-record/index'
+    'pages/expense-record/index',
+    'pages/reminder-center/index'
   ],
   window: {
     backgroundTextStyle: 'light',
