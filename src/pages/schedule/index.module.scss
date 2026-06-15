@@ -13,7 +13,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: $spacing-lg;
+      margin-bottom: $spacing-md;
       
       .monthText {
         font-size: $font-size-xl;
@@ -29,6 +29,42 @@
         align-items: center;
         justify-content: center;
         font-size: $font-size-lg;
+      }
+    }
+    
+    .filterBar {
+      display: flex;
+      gap: 16rpx;
+      margin-bottom: $spacing-md;
+      
+      .filterChip {
+        display: flex;
+        align-items: center;
+        gap: 8rpx;
+        padding: 8rpx 20rpx;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 32rpx;
+        font-size: $font-size-sm;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 45%;
+        overflow: hidden;
+        
+        Text {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        
+        .filterArrow {
+          font-size: 18rpx;
+          opacity: 0.7;
+        }
+      }
+      
+      .filterChipActive {
+        background: rgba(255, 255, 255, 0.3);
+        color: $color-text-white;
+        font-weight: $font-weight-medium;
       }
     }
     
@@ -179,12 +215,43 @@
           flex: 1;
           min-width: 0;
           
+          .scheduleTitleRow {
+            display: flex;
+            align-items: center;
+            gap: 12rpx;
+            margin-bottom: $spacing-xs;
+          }
+          
           .scheduleTitle {
             font-size: $font-size-md;
             font-weight: $font-weight-medium;
             color: $color-text-primary;
-            @include text-ellipsis;
-            margin-bottom: $spacing-xs;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          
+          .typeTag {
+            font-size: $font-size-xs;
+            padding: 2rpx 12rpx;
+            border-radius: $radius-sm;
+            flex-shrink: 0;
+          }
+          
+          .typeTag_deadline {
+            background: rgba($color-error, 0.1);
+            color: $color-error;
+          }
+          
+          .typeTag_reminder {
+            background: rgba($color-warning, 0.1);
+            color: $color-warning;
+          }
+          
+          .typeTag_meeting {
+            background: rgba($color-info, 0.1);
+            color: $color-info;
           }
           
           .scheduleTime {
@@ -201,8 +268,17 @@
             background: rgba($color-primary, 0.1);
             padding: 4rpx $spacing-sm;
             border-radius: $radius-sm;
-            @include text-ellipsis;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             max-width: 100%;
+            margin-bottom: $spacing-xs;
+          }
+          
+          .scheduleTask {
+            display: block;
+            font-size: $font-size-xs;
+            color: $color-text-tertiary;
           }
         }
         
@@ -220,6 +296,22 @@
           color: $color-error;
           flex-shrink: 0;
           margin-left: $spacing-sm;
+        }
+        
+        .scheduleArrow {
+          font-size: 32rpx;
+          color: $color-text-tertiary;
+          flex-shrink: 0;
+          margin-left: $spacing-xs;
+          align-self: center;
+        }
+      }
+      
+      .scheduleClickable {
+        cursor: pointer;
+        transition: transform 0.15s ease;
+        &:active {
+          transform: scale(0.98);
         }
       }
     }

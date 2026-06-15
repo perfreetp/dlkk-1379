@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
 import { memberAvatarById } from '@/data/mockData';
-import type { Review, Contribution } from '@/types';
+import type { Contribution } from '@/types';
 
 interface ContributionWithMember extends Contribution {
   name: string;
@@ -21,7 +21,6 @@ const ReviewPage: React.FC = () => {
   
   const { 
     goals, 
-    members, 
     getGoalById, 
     saveReview,
     getMemberById

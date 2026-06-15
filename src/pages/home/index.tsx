@@ -6,7 +6,6 @@ import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
 import GoalCard from '@/components/GoalCard';
 import TaskItem from '@/components/TaskItem';
-import { mockMembers } from '@/data/mockData';
 
 const HomePage: React.FC = () => {
   const { 

@@ -3,7 +3,6 @@ import { View, Text, ScrollView, Image, Input, Button } from '@tarojs/components
 import Taro from '@tarojs/taro';
 import { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
-import dayjs from 'dayjs';
 import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
 import TaskItem from '@/components/TaskItem';
@@ -16,7 +15,6 @@ const GoalDetailPage: React.FC = () => {
   
   const { 
     goals, 
-    members, 
     currentUserId,
     getGoalById, 
     getMemberById,
@@ -172,7 +170,7 @@ const GoalDetailPage: React.FC = () => {
     });
   };
   
-  const handleRemind = (memberId: string) => {
+  const _handleRemind = (memberId: string) => {
     const member = getMemberById(memberId);
     Taro.showToast({
       title: `已提醒${member?.name}`,

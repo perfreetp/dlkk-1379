@@ -15,6 +15,7 @@ interface TaskForm {
   priority: 'low' | 'medium' | 'high';
   assigneeId: string;
   deadline: string;
+  remind: boolean;
 }
 
 const categories: Array<{ key: Goal['category']; label: string; icon: string }> = [
@@ -47,7 +48,9 @@ const GoalCreatePage: React.FC = () => {
   const [completionCriteria, setCompletionCriteria] = useState('');
   const [visibleMemberIds, setVisibleMemberIds] = useState<string[]>([currentUserId]);
   const [tasks, setTasks] = useState<TaskForm[]>([]);
-  const [hasConflict, setHasConflict] = useState(false);
+  const [goalConflict, setGoalConflict] = useState(false);
+  const [startDateConflict, setStartDateConflict] = useState(false);
+  const [taskConflicts, setTaskConflicts] = useState<Record<string, boolean>>({});
   
   const isEdit = !!editId;
   
@@ -68,16 +71,30 @@ const GoalCreatePage: React.FC = () => {
           title: t.title,
           priority: t.priority,
           assigneeId: t.assigneeId,
-          deadline: t.deadline || ''
+          deadline: t.deadline || '',
+          remind: true
         })));
       }
     }
   }, [isEdit, editId, getGoalById]);
   
   useEffect(() => {
-    const conflict = checkDateConflict(deadline);
-    setHasConflict(conflict);
+    setGoalConflict(checkDateConflict(deadline));
   }, [deadline, checkDateConflict]);
+  
+  useEffect(() => {
+    setStartDateConflict(checkDateConflict(startDate));
+  }, [startDate, checkDateConflict]);
+  
+  useEffect(() => {
+    const conflicts: Record<string, boolean> = {};
+    tasks.forEach(t => {
+      if (t.deadline) {
+        conflicts[t.id] = checkDateConflict(t.deadline);
+      }
+    });
+    setTaskConflicts(conflicts);
+  }, [tasks, checkDateConflict]);
   
   const handleToggleMember = (memberId: string) => {
     setVisibleMemberIds(prev => 
@@ -93,7 +110,8 @@ const GoalCreatePage: React.FC = () => {
       title: '',
       priority: 'medium',
       assigneeId: currentUserId,
-      deadline: ''
+      deadline: '',
+      remind: true
     };
     setTasks([...tasks, newTask]);
   };
@@ -151,7 +169,7 @@ const GoalCreatePage: React.FC = () => {
         deadline,
         completionCriteria: completionCriteria.trim(),
         visibleMemberIds,
-        tasks: validTasks.map<Task>((t, index) => ({
+        tasks: validTasks.map<Task>((t) => ({
           id: t.id,
           title: t.title.trim(),
           description: '',
@@ -163,12 +181,7 @@ const GoalCreatePage: React.FC = () => {
         }))
       });
       
-      Taro.showToast({
-        title: '更新成功',
-        icon: 'success'
-      });
-      
-      console.log('[GoalCreate] Updated goal:', editId);
+      Taro.showToast({ title: '更新成功', icon: 'success' });
     } else {
       addGoal({
         title: title.trim(),
@@ -198,17 +211,10 @@ const GoalCreatePage: React.FC = () => {
         rewards: []
       });
       
-      Taro.showToast({
-        title: '创建成功',
-        icon: 'success'
-      });
-      
-      console.log('[GoalCreate] Created new goal:', title);
+      Taro.showToast({ title: '创建成功', icon: 'success' });
     }
     
-    setTimeout(() => {
-      Taro.navigateBack();
-    }, 1500);
+    setTimeout(() => { Taro.navigateBack(); }, 1500);
   };
   
   const handleCancel = () => {
@@ -251,17 +257,11 @@ const GoalCreatePage: React.FC = () => {
             {categories.map(cat => (
               <View
                 key={cat.key}
-                className={classnames(
-                  styles.categoryItem,
-                  category === cat.key && styles.categoryItemActive
-                )}
+                className={classnames(styles.categoryItem, category === cat.key && styles.categoryItemActive)}
                 onClick={() => setCategory(cat.key)}
               >
                 <Text className={styles.categoryIcon}>{cat.icon}</Text>
-                <Text className={classnames(
-                  styles.categoryName,
-                  category === cat.key && styles.categoryNameActive
-                )}>
+                <Text className={classnames(styles.categoryName, category === cat.key && styles.categoryNameActive)}>
                   {cat.label}
                 </Text>
               </View>
@@ -280,36 +280,27 @@ const GoalCreatePage: React.FC = () => {
           <View className={styles.dateRow}>
             <View className={styles.dateItem}>
               <Text className={classnames(styles.formLabel, styles.formLabelRequired)}>开始日期</Text>
-              <Picker
-                mode='date'
-                value={startDate}
-                onChange={(e) => setStartDate(e.detail.value)}
-              >
+              <Picker mode='date' value={startDate} onChange={(e) => setStartDate(e.detail.value)}>
                 <View className={styles.dateInput}>
                   <Text>{startDate}</Text>
                 </View>
               </Picker>
+              {startDateConflict && (
+                <Text className={styles.dateConflictHint}>⚠️ 当天已有安排</Text>
+              )}
             </View>
             <View className={styles.dateItem}>
               <Text className={classnames(styles.formLabel, styles.formLabelRequired)}>截止日期</Text>
-              <Picker
-                mode='date'
-                value={deadline}
-                onChange={(e) => setDeadline(e.detail.value)}
-              >
+              <Picker mode='date' value={deadline} onChange={(e) => setDeadline(e.detail.value)}>
                 <View className={styles.dateInput}>
                   <Text>{deadline}</Text>
                 </View>
               </Picker>
+              {goalConflict && (
+                <Text className={styles.dateConflictHint}>⚠️ 当天已有安排</Text>
+              )}
             </View>
           </View>
-          
-          {hasConflict && (
-            <View className={styles.conflictWarning}>
-              <Text className={styles.conflictIcon}>⚠️</Text>
-              <Text className={styles.conflictText}>该日期与现有日程冲突，请注意协调</Text>
-            </View>
-          )}
         </View>
         
         <View className={styles.formGroup}>
@@ -355,21 +346,13 @@ const GoalCreatePage: React.FC = () => {
               >
                 <View className={styles.avatarWrapper}>
                   <Image
-                    className={classnames(
-                      styles.memberAvatar,
-                      visibleMemberIds.includes(member.id) && styles.memberAvatarSelected
-                    )}
+                    className={classnames(styles.memberAvatar, visibleMemberIds.includes(member.id) && styles.memberAvatarSelected)}
                     src={memberAvatarById(member.id)}
                     mode='aspectFill'
                   />
-                  {visibleMemberIds.includes(member.id) && (
-                    <Text className={styles.checkIcon}>✓</Text>
-                  )}
+                  {visibleMemberIds.includes(member.id) && <Text className={styles.checkIcon}>✓</Text>}
                 </View>
-                <Text className={classnames(
-                  styles.memberName,
-                  visibleMemberIds.includes(member.id) && styles.memberNameSelected
-                )}>
+                <Text className={classnames(styles.memberName, visibleMemberIds.includes(member.id) && styles.memberNameSelected)}>
                   {member.name}
                 </Text>
               </View>
@@ -387,9 +370,7 @@ const GoalCreatePage: React.FC = () => {
         <View className={styles.tasksSection}>
           <View className={styles.tasksHeader}>
             <Text className={styles.formLabel}>待办清单</Text>
-            <Text className={styles.addTaskBtn} onClick={handleAddTask}>
-              + 添加任务
-            </Text>
+            <Text className={styles.addTaskBtn} onClick={handleAddTask}>+ 添加任务</Text>
           </View>
           
           {tasks.length === 0 ? (
@@ -413,24 +394,16 @@ const GoalCreatePage: React.FC = () => {
                       {priorities.map(p => (
                         <Text
                           key={p.key}
-                          className={classnames(
-                            styles.priorityTag,
-                            task.priority === p.key && styles[p.class]
-                          )}
+                          className={classnames(styles.priorityTag, task.priority === p.key && styles[p.class])}
                           onClick={() => handleUpdateTask(task.id, 'priority', p.key)}
-                        >
-                          {p.label}
-                        </Text>
+                        >{p.label}</Text>
                       ))}
                     </View>
                     <View className={styles.assigneeSelector}>
                       {members.map(m => (
                         <Image
                           key={m.id}
-                          className={classnames(
-                            styles.assigneeAvatar,
-                            task.assigneeId === m.id && styles.assigneeAvatarSelected
-                          )}
+                          className={classnames(styles.assigneeAvatar, task.assigneeId === m.id && styles.assigneeAvatarSelected)}
                           src={memberAvatarById(m.id)}
                           mode='aspectFill'
                           onClick={() => handleUpdateTask(task.id, 'assigneeId', m.id)}
@@ -438,13 +411,30 @@ const GoalCreatePage: React.FC = () => {
                       ))}
                     </View>
                   </View>
+                  <View className={styles.taskDateRow}>
+                    <View className={styles.taskDateItem}>
+                      <Picker mode='date' value={task.deadline || deadline} onChange={(e) => handleUpdateTask(task.id, 'deadline', e.detail.value)}>
+                        <View className={styles.taskDateInput}>
+                          <Text className={styles.taskDateIcon}>📅</Text>
+                          <Text className={classnames(styles.taskDateText, !task.deadline && styles.taskDatePlaceholder)}>
+                            {task.deadline || '选截止日期'}
+                          </Text>
+                        </View>
+                      </Picker>
+                      {taskConflicts[task.id] && (
+                        <Text className={styles.dateConflictHint}>⚠️ 冲突</Text>
+                      )}
+                    </View>
+                    <View
+                      className={classnames(styles.remindToggle, task.remind && styles.remindActive)}
+                      onClick={() => handleUpdateTask(task.id, 'remind', !task.remind)}
+                    >
+                      <Text className={styles.remindIcon}>🔔</Text>
+                      <Text className={styles.remindText}>{task.remind ? '已开提醒' : '开提醒'}</Text>
+                    </View>
+                  </View>
                 </View>
-                <Text
-                  className={styles.deleteTaskBtn}
-                  onClick={() => handleDeleteTask(task.id)}
-                >
-                  ✕
-                </Text>
+                <Text className={styles.deleteTaskBtn} onClick={() => handleDeleteTask(task.id)}>✕</Text>
               </View>
             ))
           )}
@@ -452,16 +442,8 @@ const GoalCreatePage: React.FC = () => {
       </View>
       
       <View className={styles.bottomActions}>
-        <Button
-          className={classnames(styles.actionBtn, styles.secondary)}
-          onClick={handleCancel}
-        >
-          取消
-        </Button>
-        <Button
-          className={classnames(styles.actionBtn, styles.primary)}
-          onClick={handleSubmit}
-        >
+        <Button className={classnames(styles.actionBtn, styles.secondary)} onClick={handleCancel}>取消</Button>
+        <Button className={classnames(styles.actionBtn, styles.primary)} onClick={handleSubmit}>
           {isEdit ? '保存修改' : '创建目标'}
         </Button>
       </View>

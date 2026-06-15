@@ -13,8 +13,7 @@ const MinePage: React.FC = () => {
     currentUserId, 
     getMemberById, 
     getGoalsByMember,
-    downloadCSV,
-    copyToClipboard,
+    handleExport,
     resetToMockData
   } = useGoalStore();
   
@@ -50,39 +49,9 @@ const MinePage: React.FC = () => {
         Math.floor(totalExpenses / 100) * 5 + 
         memberComments.length * 2;
       
-      return {
-        member,
-        score
-      };
+      return { member, score };
     }).sort((a, b) => b.score - a.score);
   }, [goals, members]);
-  
-  const handleExport = () => {
-    Taro.showActionSheet({
-      itemList: ['下载 CSV 文件', '复制到剪贴板'],
-      success: async (res) => {
-        if (res.tapIndex === 0) {
-          try {
-            downloadCSV();
-            Taro.showToast({ title: '下载成功', icon: 'success' });
-          } catch (e) {
-            Taro.showToast({ title: '下载失败', icon: 'none' });
-          }
-        } else if (res.tapIndex === 1) {
-          try {
-            const success = await copyToClipboard();
-            if (success) {
-              Taro.showToast({ title: '已复制到剪贴板', icon: 'success' });
-            } else {
-              Taro.showToast({ title: '复制失败', icon: 'none' });
-            }
-          } catch (e) {
-            Taro.showToast({ title: '复制失败', icon: 'none' });
-          }
-        }
-      }
-    });
-  };
   
   const handleResetData = () => {
     Taro.showModal({
@@ -101,69 +70,27 @@ const MinePage: React.FC = () => {
   const handleGoToReview = () => {
     const completedGoals = goals.filter(g => g.status === 'completed');
     if (completedGoals.length > 0) {
-      Taro.navigateTo({
-        url: `/pages/review/index?id=${completedGoals[0].id}`
-      });
+      Taro.navigateTo({ url: `/pages/review/index?id=${completedGoals[0].id}` });
     } else {
-      Taro.showToast({
-        title: '暂无已完成目标',
-        icon: 'none'
-      });
+      Taro.showToast({ title: '暂无已完成目标', icon: 'none' });
     }
   };
   
   const handleGoToSettings = () => {
-    Taro.showToast({
-      title: '设置功能开发中',
-      icon: 'none'
-    });
+    Taro.showToast({ title: '设置功能开发中', icon: 'none' });
   };
   
   const handleAddMember = () => {
-    Taro.showToast({
-      title: '邀请功能开发中',
-      icon: 'none'
-    });
+    Taro.showToast({ title: '邀请功能开发中', icon: 'none' });
   };
   
   const menuItems = [
-    {
-      icon: '📊',
-      iconClass: 'primary',
-      title: '导出目标清单',
-      onClick: handleExport
-    },
-    {
-      icon: '📝',
-      iconClass: 'success',
-      title: '复盘总结',
-      onClick: handleGoToReview,
-      badge: '3'
-    },
-    {
-      icon: '🎁',
-      iconClass: 'reward',
-      title: '我的奖励',
-      onClick: () => Taro.showToast({ title: '奖励功能开发中', icon: 'none' })
-    },
-    {
-      icon: '🔔',
-      iconClass: 'warning',
-      title: '提醒设置',
-      onClick: () => Taro.showToast({ title: '提醒设置开发中', icon: 'none' })
-    },
-    {
-      icon: '⚙️',
-      iconClass: 'info',
-      title: '设置',
-      onClick: handleGoToSettings
-    },
-    {
-      icon: '🔄',
-      iconClass: 'danger',
-      title: '重置为示例数据',
-      onClick: handleResetData
-    }
+    { icon: '📊', iconClass: 'primary', title: '导出目标清单', onClick: handleExport },
+    { icon: '📝', iconClass: 'success', title: '复盘总结', onClick: handleGoToReview },
+    { icon: '🎁', iconClass: 'reward', title: '我的奖励', onClick: () => Taro.showToast({ title: '奖励功能开发中', icon: 'none' }) },
+    { icon: '🔔', iconClass: 'warning', title: '提醒设置', onClick: () => Taro.showToast({ title: '提醒设置开发中', icon: 'none' }) },
+    { icon: '⚙️', iconClass: 'info', title: '设置', onClick: handleGoToSettings },
+    { icon: '🔄', iconClass: 'danger', title: '重置为示例数据', onClick: handleResetData }
   ];
   
   return (
@@ -212,7 +139,6 @@ const MinePage: React.FC = () => {
               <View className={styles.menuContent}>
                 <Text className={styles.menuTitle}>{item.title}</Text>
               </View>
-              {item.badge && <View className={styles.menuBadge}>{item.badge}</View>}
               <Text className={styles.menuArrow}>›</Text>
             </View>
           ))}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image } from '@tarojs/components';
+import type { ITouchEvent } from '@tarojs/components/types/common';
 import classnames from 'classnames';
 import dayjs from 'dayjs';
 import styles from './index.module.scss';
@@ -28,7 +29,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, goalId, onToggle, onClick }) 
     }
   };
   
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleToggle = (e: ITouchEvent) => {
     e.stopPropagation();
     if (onToggle) {
       onToggle();

@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
@@ -92,13 +91,7 @@ const StatisticsPage: React.FC = () => {
   };
   
   const handleExport = () => {
-    const { downloadCSV } = useGoalStore.getState();
-    downloadCSV();
-    console.log('[StatisticsPage] Exported goals CSV');
-    Taro.showToast({
-      title: '导出成功',
-      icon: 'success'
-    });
+    useGoalStore.getState().handleExport();
   };
   
   return (

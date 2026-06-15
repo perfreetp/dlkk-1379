@@ -4,7 +4,7 @@ import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
 import type { Goal } from '@/types';
-import { categoryLabels, statusLabels, categoryColors, memberAvatarById } from '@/data/mockData';
+import { categoryLabels, statusLabels, memberAvatarById } from '@/data/mockData';
 import { useGoalStore } from '@/store/useGoalStore';
 
 interface GoalCardProps {

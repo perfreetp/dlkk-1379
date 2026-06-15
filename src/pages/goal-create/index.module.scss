@@ -379,3 +379,72 @@
 .conflictIcon {
   font-size: 32rpx;
 }
+
+.dateConflictHint {
+  font-size: 22rpx;
+  color: $color-warning;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.taskDateRow {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 12rpx;
+}
+
+.taskDateItem {
+  flex: 1;
+}
+
+.taskDateInput {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  background: rgba($color-primary, 0.06);
+  border-radius: 12rpx;
+  border: 2rpx solid rgba($color-primary, 0.15);
+}
+
+.taskDateIcon {
+  font-size: 26rpx;
+}
+
+.taskDateText {
+  font-size: 24rpx;
+  color: $color-text-primary;
+}
+
+.taskDatePlaceholder {
+  color: $color-text-tertiary;
+}
+
+.remindToggle {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 16rpx;
+  background: $color-bg-page;
+  border-radius: 12rpx;
+  border: 2rpx solid $color-border;
+}
+
+.remindActive {
+  background: rgba($color-warning, 0.1);
+  border-color: rgba($color-warning, 0.3);
+}
+
+.remindIcon {
+  font-size: 24rpx;
+}
+
+.remindText {
+  font-size: 22rpx;
+  color: $color-text-secondary;
+}
+
+.remindActive .remindText {
+  color: $color-warning;
+}
