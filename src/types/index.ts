@@ -13,6 +13,8 @@ export interface MemberPermission {
   permission: GoalPermission;
 }
 
+export type RemindOffset = 0 | 1 | 3 | -1;
+
 export interface Task {
   id: string;
   title: string;
@@ -22,6 +24,7 @@ export interface Task {
   deadline?: string;
   priority: 'low' | 'medium' | 'high';
   remind?: boolean;
+  remindOffset?: RemindOffset;
   createdAt: string;
   completedAt?: string;
 }

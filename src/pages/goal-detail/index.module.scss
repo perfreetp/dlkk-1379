@@ -499,6 +499,109 @@
       }
     }
     
+    .permissionCard {
+      background: $color-bg-card;
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      margin-bottom: $spacing-md;
+      box-shadow: $shadow-card;
+      border: 1rpx solid rgba($color-info, 0.2);
+      
+      .permissionHeader {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        margin-bottom: $spacing-md;
+        
+        .permissionIcon {
+          font-size: 32rpx;
+        }
+        
+        .permissionTitle {
+          font-size: $font-size-md;
+          font-weight: $font-weight-semibold;
+          color: $color-text-primary;
+        }
+      }
+      
+      .permissionList {
+        margin-bottom: $spacing-md;
+      }
+      
+      .permissionRow {
+        display: flex;
+        align-items: center;
+        padding: $spacing-sm 0;
+        
+        &:not(:last-child) {
+          border-bottom: 1rpx solid $color-divider;
+        }
+      }
+      
+      .permAvatar {
+        width: 56rpx;
+        height: 56rpx;
+        border-radius: $radius-round;
+        margin-right: $spacing-sm;
+      }
+      
+      .permInfo {
+        flex: 1;
+        
+        .permName {
+          font-size: $font-size-sm;
+          color: $color-text-primary;
+          margin-right: $spacing-xs;
+        }
+        
+        .permLabel {
+          font-size: $font-size-xs;
+          padding: 2rpx 10rpx;
+          border-radius: $radius-sm;
+          display: inline-block;
+        }
+        
+        .permLabelOwner {
+          background: rgba($color-success, 0.1);
+          color: $color-success;
+        }
+        
+        .permLabelEdit {
+          background: rgba($color-primary, 0.1);
+          color: $color-primary;
+        }
+        
+        .permLabelView {
+          background: rgba($color-text-tertiary, 0.15);
+          color: $color-text-tertiary;
+        }
+      }
+      
+      .permToggle {
+        padding: 6rpx 16rpx;
+        border-radius: $radius-sm;
+        background: rgba($color-primary, 0.1);
+        
+        .permToggleText {
+          font-size: $font-size-xs;
+          color: $color-primary;
+        }
+        
+        &:active {
+          background: rgba($color-primary, 0.2);
+        }
+      }
+      
+      .permissionHint {
+        font-size: $font-size-xs;
+        color: $color-text-tertiary;
+        line-height: 1.6;
+        padding: $spacing-sm;
+        background: rgba($color-info, 0.05);
+        border-radius: $radius-sm;
+      }
+    }
+    
     .reviewCard {
       background: linear-gradient(135deg, rgba($color-success, 0.1) 0%, rgba($color-success, 0.05) 100%);
       border: 1rpx solid rgba($color-success, 0.3);

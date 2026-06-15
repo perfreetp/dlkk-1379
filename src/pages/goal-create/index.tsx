@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
 import { memberAvatarById } from '@/data/mockData';
-import type { Goal, Task, MemberPermission, GoalPermission } from '@/types';
+import type { Goal, Task, MemberPermission, GoalPermission, RemindOffset } from '@/types';
 
 interface TaskForm {
   id: string;
@@ -16,6 +16,7 @@ interface TaskForm {
   assigneeId: string;
   deadline: string;
   remind: boolean;
+  remindOffset: RemindOffset;
 }
 
 const categories: Array<{ key: Goal['category']; label: string; icon: string }> = [
@@ -43,7 +44,8 @@ const GoalCreatePage: React.FC = () => {
     addGoal,
     updateGoal,
     getGoalById,
-    checkDateConflict
+    checkDateConflict,
+    canEditGoal
   } = useGoalStore();
 
   const [title, setTitle] = useState('');
@@ -81,7 +83,8 @@ const GoalCreatePage: React.FC = () => {
           priority: t.priority,
           assigneeId: t.assigneeId,
           deadline: t.deadline || '',
-          remind: t.remind !== false
+          remind: t.remind !== false,
+          remindOffset: t.remindOffset !== undefined ? t.remindOffset : 0
         })));
       }
     } else {
@@ -139,7 +142,8 @@ const GoalCreatePage: React.FC = () => {
       priority: 'medium',
       assigneeId: currentUserId,
       deadline: '',
-      remind: true
+      remind: true,
+      remindOffset: 0
     };
     setTasks([...tasks, newTask]);
   };
@@ -184,6 +188,11 @@ const GoalCreatePage: React.FC = () => {
   
   const handleSubmit = () => {
     if (!validateForm()) return;
+
+    if (isEdit && editId && !canEditGoal(editId)) {
+      Taro.showToast({ title: '您没有编辑此目标的权限', icon: 'none' });
+      return;
+    }
     
     const validTasks = tasks.filter(t => t.title.trim());
     
@@ -207,6 +216,7 @@ const GoalCreatePage: React.FC = () => {
           priority: t.priority,
           deadline: t.deadline || undefined,
           remind: t.remind,
+          remindOffset: t.remind ? t.remindOffset : -1,
           createdAt: dayjs().toISOString()
         }))
       });
@@ -236,6 +246,7 @@ const GoalCreatePage: React.FC = () => {
           priority: t.priority,
           deadline: t.deadline || undefined,
           remind: t.remind,
+          remindOffset: t.remind ? t.remindOffset : -1,
           createdAt: dayjs().toISOString()
         })),
         expenses: [],
@@ -476,12 +487,32 @@ const GoalCreatePage: React.FC = () => {
                         <Text className={styles.dateConflictHint}>⚠️ 冲突</Text>
                       )}
                     </View>
-                    <View
-                      className={classnames(styles.remindToggle, task.remind && styles.remindActive)}
-                      onClick={() => handleUpdateTask(task.id, 'remind', !task.remind)}
-                    >
-                      <Text className={styles.remindIcon}>🔔</Text>
-                      <Text className={styles.remindText}>{task.remind ? '已开提醒' : '开提醒'}</Text>
+                    <View className={styles.remindRow}>
+                      <View
+                        className={classnames(styles.remindToggle, task.remind && styles.remindActive)}
+                        onClick={() => handleUpdateTask(task.id, 'remind', !task.remind)}
+                      >
+                        <Text className={styles.remindIcon}>{task.remind ? '🔔' : '🔕'}</Text>
+                        <Text className={styles.remindText}>{task.remind ? '提醒开' : '提醒关'}</Text>
+                      </View>
+                      {task.remind && (
+                        <Picker
+                          mode='selector'
+                          range={['当天提醒', '提前1天', '提前3天']}
+                          value={task.remindOffset === 0 ? 0 : task.remindOffset === 1 ? 1 : 2}
+                          onChange={(e) => {
+                            const offsets: RemindOffset[] = [0, 1, 3];
+                            handleUpdateTask(task.id, 'remindOffset', offsets[e.detail.value as number]);
+                          }}
+                        >
+                          <View className={styles.remindOffsetBtn}>
+                            <Text className={styles.remindOffsetText}>
+                              {task.remindOffset === 0 ? '当天' : task.remindOffset === 1 ? '提前1天' : '提前3天'}
+                            </Text>
+                            <Text className={styles.remindOffsetArrow}>▼</Text>
+                          </View>
+                        </Picker>
+                      )}
                     </View>
                   </View>
                 </View>

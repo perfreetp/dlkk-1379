@@ -27,7 +27,8 @@ const GoalDetailPage: React.FC = () => {
     canEditGoal,
     canEditExpense,
     canEditReward,
-    canEditReview
+    canEditReview,
+    updateGoalPermission
   } = useGoalStore();
   
   const [activeTab, setActiveTab] = useState<'tasks' | 'info' | 'expense' | 'reward' | 'comment'>('tasks');
@@ -357,6 +358,48 @@ const GoalDetailPage: React.FC = () => {
                   </View>
                   <Text className={styles.infoValue}>{visibleMembers.length}人</Text>
                 </View>
+              </View>
+            </View>
+
+            <View className={styles.permissionCard}>
+              <View className={styles.permissionHeader}>
+                <Text className={styles.permissionIcon}>🔒</Text>
+                <Text className={styles.permissionTitle}>权限说明</Text>
+              </View>
+              <View className={styles.permissionList}>
+                {(goal.memberPermissions || []).map(perm => {
+                  const member = getMemberById(perm.memberId);
+                  if (!member) return null;
+                  const isOwner = member.role === 'owner';
+                  const isCurrentUser = perm.memberId === currentUserId;
+                  const canChangePerm = canEditGoal(goalId) && !isOwner && perm.memberId !== goal.createdBy;
+                  return (
+                    <View key={perm.memberId} className={styles.permissionRow}>
+                      <Image
+                        className={styles.permAvatar}
+                        src={memberAvatarById(member.id)}
+                        mode='aspectFill'
+                      />
+                      <View className={styles.permInfo}>
+                        <Text className={styles.permName}>{member.name}{isCurrentUser ? '（我）' : ''}</Text>
+                        <Text className={classnames(styles.permLabel, isOwner && styles.permLabelOwner, perm.permission === 'edit' && !isOwner && styles.permLabelEdit, perm.permission === 'view' && !isOwner && styles.permLabelView)}>
+                          {isOwner ? '管理员' : perm.permission === 'edit' ? '可编辑' : '只读'}
+                        </Text>
+                      </View>
+                      {canChangePerm && (
+                        <View
+                          className={styles.permToggle}
+                          onClick={() => updateGoalPermission(goalId, perm.memberId, perm.permission === 'edit' ? 'view' : 'edit')}
+                        >
+                          <Text className={styles.permToggleText}>{perm.permission === 'edit' ? '改为只读' : '改为可编辑'}</Text>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
+              <View className={styles.permissionHint}>
+                <Text>💡 管理员自动拥有全部权限；可编辑成员可修改任务、费用、奖励；只读成员只能查看。以下操作受权限控制：添加/编辑任务、添加费用、编辑奖励、复盘完成。</Text>
               </View>
             </View>
             

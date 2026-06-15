@@ -448,6 +448,12 @@
   color: $color-text-tertiary;
 }
 
+.remindRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
 .remindToggle {
   display: flex;
   align-items: center;
@@ -474,4 +480,25 @@
 
 .remindActive .remindText {
   color: $color-warning;
+}
+
+.remindOffsetBtn {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 8rpx 16rpx;
+  background: rgba($color-primary, 0.08);
+  border-radius: 12rpx;
+  border: 2rpx solid rgba($color-primary, 0.2);
+  
+  .remindOffsetText {
+    font-size: 22rpx;
+    color: $color-primary;
+  }
+  
+  .remindOffsetArrow {
+    font-size: 18rpx;
+    color: $color-primary;
+    opacity: 0.6;
+  }
 }

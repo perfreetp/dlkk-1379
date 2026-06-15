@@ -10,7 +10,8 @@ import type {
   Reward,
   Review,
   MemberPermission,
-  GoalPermission
+  GoalPermission,
+  RemindOffset
 } from '@/types';
 import { mockGoals, mockMembers, mockSchedules } from '@/data/mockData';
 import dayjs from 'dayjs';
@@ -32,7 +33,11 @@ const normalizeGoals = (goals: Goal[]): Goal[] => {
       memberId: mid,
       permission: (g.createdBy === mid ? 'edit' : 'view') as GoalPermission
     })),
-    tasks: g.tasks.map(t => ({ ...t, remind: t.remind !== false }))
+    tasks: g.tasks.map(t => ({
+      ...t,
+      remind: t.remind !== false,
+      remindOffset: (t.remindOffset !== undefined ? t.remindOffset : 0) as RemindOffset
+    }))
   }));
 };
 
@@ -116,6 +121,10 @@ interface GoalStore {
   setSelectedGoal: (goal: Goal | null) => void;
   setLastReminderFilter: (filter: string) => void;
 
+  switchUser: (userId: string) => void;
+  updateGoalPermission: (goalId: string, memberId: string, permission: GoalPermission) => void;
+  syncTaskSchedules: (goalId: string, taskId: string) => void;
+
   getGoalById: (id: string) => Goal | undefined;
   addGoal: (goal: Omit<Goal, 'id' | 'createdAt' | 'updatedAt'> & { memberPermissions?: MemberPermission[] }) => void;
   updateGoal: (id: string, updates: Partial<Goal> & { tasks?: Task[] }) => void;
@@ -183,6 +192,60 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
     persistState(get());
   },
 
+  switchUser: (userId) => {
+    set({ currentUserId: userId });
+    persistState(get());
+  },
+
+  updateGoalPermission: (goalId, memberId, permission) => {
+    const state = get();
+    const goal = state.getGoalById(goalId);
+    if (!goal) return;
+    const currentUser = state.getMemberById(state.currentUserId);
+    if (!currentUser) return;
+    if (currentUser.role === 'viewer') return;
+    if (goal.createdBy !== state.currentUserId && currentUser.role !== 'owner') return;
+
+    set(s => {
+      const ns = {
+        ...s,
+        goals: s.goals.map(g => {
+          if (g.id !== goalId) return g;
+          const perms = g.memberPermissions || [];
+          const existing = perms.find(p => p.memberId === memberId);
+          const newPerms = existing
+            ? perms.map(p => p.memberId === memberId ? { ...p, permission } : p)
+            : [...perms, { memberId, permission }];
+          return { ...g, memberPermissions: newPerms, updatedAt: new Date().toISOString() };
+        })
+      };
+      persistState(ns);
+      return ns;
+    });
+  },
+
+  syncTaskSchedules: (goalId, taskId) => {
+    set(s => {
+      const ns = { ...s, schedules: s.schedules.filter(sc => sc.taskId !== taskId) };
+      persistState(ns);
+      return ns;
+    });
+    const goal = get().getGoalById(goalId);
+    const task = goal?.tasks.find(t => t.id === taskId);
+    if (task && task.deadline && task.remind && task.remindOffset !== -1) {
+      const remindDate = dayjs(task.deadline).subtract(task.remindOffset || 0, 'day').format('YYYY-MM-DD');
+      get().addSchedule({
+        title: `任务: ${task.title}`,
+        date: remindDate,
+        type: 'reminder',
+        goalId,
+        taskId,
+        remindEnabled: true,
+        read: false
+      });
+    }
+  },
+
   getGoalById: (id) => get().goals.find(g => g.id === id),
 
   addGoal: (goal) => {
@@ -226,17 +289,7 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
     }
 
     newGoal.tasks.forEach(t => {
-      if (t.deadline && t.remind) {
-        get().addSchedule({
-          title: `任务: ${t.title}`,
-          date: t.deadline,
-          type: 'reminder',
-          goalId,
-          taskId: t.id,
-          remindEnabled: true,
-          read: false
-        });
-      }
+      get().syncTaskSchedules(goalId, t.id);
     });
 
     console.log('[GoalStore] Added new goal:', newGoal.title);
@@ -247,94 +300,87 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
     const oldGoal = state.getGoalById(id);
     if (!oldGoal) return;
 
-    let newTasks = oldGoal.tasks;
-    if (updates.tasks) {
-      newTasks = oldGoal.tasks.map(oldTask => {
-        const newTask = updates.tasks!.find(t => t.id === oldTask.id);
-        if (!newTask) return oldTask;
-        return {
-          ...oldTask,
-          title: newTask.title,
-          priority: newTask.priority,
-          assigneeId: newTask.assigneeId,
-          deadline: newTask.deadline,
-          remind: newTask.remind
-        };
-      });
-
-      const newTaskIds = updates.tasks.map(t => t.id);
-      const addedTasks = updates.tasks.filter(t => !oldGoal!.tasks.find(ot => ot.id === t.id));
-      newTasks = [...newTasks, ...addedTasks];
-      const removedTaskIds = oldGoal.tasks.filter(t => !newTaskIds.includes(t.id)).map(t => t.id);
-
-      if (removedTaskIds.length > 0) {
-        set(s => {
-          const ns = { ...s, schedules: s.schedules.filter(sc => !removedTaskIds.includes(sc.taskId || '')) };
-          return ns;
-        });
-      }
-
-      addedTasks.forEach(t => {
-        if (t.deadline && t.remind) {
-          get().addSchedule({
-            title: `任务: ${t.title}`,
-            date: t.deadline,
-            type: 'reminder',
-            goalId: id,
-            taskId: t.id,
-            remindEnabled: true,
-            read: false
-          });
-        }
-      });
-
-      updates.tasks.forEach(newTask => {
-        const oldTask = oldGoal.tasks.find(ot => ot.id === newTask.id);
-        if (oldTask && oldTask.deadline !== newTask.deadline) {
-          const taskSchedules = state.schedules.filter(s => s.taskId === newTask.id);
-          taskSchedules.forEach(ts => {
-            get().updateSchedule(ts.id, { date: newTask.deadline || ts.date, title: `任务: ${newTask.title}` });
-          });
-        }
-        if (oldTask && oldTask.remind !== newTask.remind) {
-          const taskSchedules = state.schedules.filter(s => s.taskId === newTask.id);
-          taskSchedules.forEach(ts => {
-            get().toggleReminderEnabled(ts.id, newTask.remind !== false);
-          });
-        }
-      });
-    }
-
     const newGoalData = { ...updates };
     delete (newGoalData as any).tasks;
 
-    if (updates.deadline && updates.deadline !== oldGoal.deadline) {
-      const deadlineSchedules = state.schedules.filter(s => s.goalId === id && s.type === 'deadline');
-      deadlineSchedules.forEach(s => {
-        get().updateSchedule(s.id, { date: updates.deadline! });
-      });
+    const syncNeeded: string[] = [];
+    const removedTaskIds: string[] = [];
+    let finalTasks: Task[] | null = null;
+
+    if (updates.tasks) {
+      const newTaskIds = updates.tasks.map(t => t.id);
+      const addedTasks = updates.tasks.filter(t => !oldGoal.tasks.find(ot => ot.id === t.id));
+      removedTaskIds.push(...oldGoal.tasks.filter(t => !newTaskIds.includes(t.id)).map(t => t.id));
+
+      const existingMerged = oldGoal.tasks
+        .filter(t => newTaskIds.includes(t.id))
+        .map(oldTask => {
+          const newTask = updates.tasks!.find(t => t.id === oldTask.id)!;
+          if (
+            oldTask.deadline !== newTask.deadline ||
+            oldTask.remind !== newTask.remind ||
+            oldTask.remindOffset !== newTask.remindOffset
+          ) {
+            syncNeeded.push(oldTask.id);
+          }
+          return {
+            ...oldTask,
+            title: newTask.title,
+            priority: newTask.priority,
+            assigneeId: newTask.assigneeId,
+            deadline: newTask.deadline,
+            remind: newTask.remind,
+            remindOffset: newTask.remindOffset
+          };
+        });
+
+      addedTasks.forEach(t => syncNeeded.push(t.id));
+      finalTasks = [...existingMerged, ...addedTasks];
     }
-    if (updates.startDate && updates.startDate !== oldGoal.startDate) {
-      const startSchedules = state.schedules.filter(s =>
-        s.goalId === id && s.type === 'reminder' && !s.taskId && s.title.includes('目标开始')
-      );
-      startSchedules.forEach(s => {
-        get().updateSchedule(s.id, { date: updates.startDate! });
+
+    if (removedTaskIds.length > 0) {
+      set(s => {
+        const ns = { ...s, schedules: s.schedules.filter(sc => !removedTaskIds.includes(sc.taskId || '')) };
+        persistState(ns);
+        return ns;
       });
     }
 
     set(s => {
       const ns = {
         ...s,
-        goals: s.goals.map(g =>
-          g.id === id
-            ? { ...g, ...newGoalData, tasks: newTasks, updatedAt: new Date().toISOString() }
-            : g
-        )
+        goals: s.goals.map(g => {
+          if (g.id !== id) return g;
+          const updated: Goal = { ...g, ...newGoalData, updatedAt: new Date().toISOString() };
+          if (finalTasks) {
+            updated.tasks = finalTasks;
+            updated.progress = get().calculateProgress(finalTasks);
+          }
+          return updated;
+        })
       };
       persistState(ns);
       return ns;
     });
+
+    syncNeeded.forEach(taskId => {
+      get().syncTaskSchedules(id, taskId);
+    });
+
+    if (updates.deadline && updates.deadline !== oldGoal.deadline) {
+      const deadlineSchedules = get().schedules.filter(s => s.goalId === id && s.type === 'deadline');
+      deadlineSchedules.forEach(s => {
+        get().updateSchedule(s.id, { date: updates.deadline! });
+      });
+    }
+    if (updates.startDate && updates.startDate !== oldGoal.startDate) {
+      const startSchedules = get().schedules.filter(s =>
+        s.goalId === id && s.type === 'reminder' && !s.taskId && s.title.includes('目标开始')
+      );
+      startSchedules.forEach(s => {
+        get().updateSchedule(s.id, { date: updates.startDate! });
+      });
+    }
 
     console.log('[GoalStore] Updated goal:', id);
   },
@@ -392,17 +438,7 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
       return ns;
     });
 
-    if (task.deadline && newTask.remind) {
-      get().addSchedule({
-        title: `任务: ${task.title}`,
-        date: task.deadline,
-        type: 'reminder',
-        goalId,
-        taskId: newTask.id,
-        remindEnabled: true,
-        read: false
-      });
-    }
+    get().syncTaskSchedules(goalId, newTask.id);
 
     console.log('[GoalStore] Added task:', newTask.title, 'to goal:', goalId);
   },
@@ -434,18 +470,12 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
       return ns;
     });
 
-    if (updates.deadline && oldTask && updates.deadline !== oldTask.deadline) {
-      const taskSchedules = state.schedules.filter(s => s.taskId === taskId);
-      taskSchedules.forEach(ts => {
-        get().updateSchedule(ts.id, { date: updates.deadline! });
-      });
-    }
-
-    if (updates.remind !== undefined && oldTask && updates.remind !== oldTask.remind) {
-      const taskSchedules = state.schedules.filter(s => s.taskId === taskId);
-      taskSchedules.forEach(ts => {
-        get().toggleReminderEnabled(ts.id, updates.remind!);
-      });
+    if (oldTask && (
+      (updates.deadline !== undefined && updates.deadline !== oldTask.deadline) ||
+      (updates.remind !== undefined && updates.remind !== oldTask.remind) ||
+      (updates.remindOffset !== undefined && updates.remindOffset !== oldTask.remindOffset)
+    )) {
+      get().syncTaskSchedules(goalId, taskId);
     }
 
     console.log('[GoalStore] Updated task:', taskId);
@@ -760,14 +790,21 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
   },
 
   toggleReminderEnabled: (id, enabled) => {
-    set(state => {
-      const ns = {
-        ...state,
-        schedules: state.schedules.map(s => s.id === id ? { ...s, remindEnabled: enabled } : s)
-      };
-      persistState(ns);
-      return ns;
-    });
+    const state = get();
+    const schedule = state.schedules.find(s => s.id === id);
+
+    if (enabled && schedule && schedule.taskId && schedule.goalId) {
+      get().syncTaskSchedules(schedule.goalId, schedule.taskId);
+    } else {
+      set(state => {
+        const ns = {
+          ...state,
+          schedules: state.schedules.map(s => s.id === id ? { ...s, remindEnabled: enabled } : s)
+        };
+        persistState(ns);
+        return ns;
+      });
+    }
   },
 
   exportGoalsCSV: () => {
