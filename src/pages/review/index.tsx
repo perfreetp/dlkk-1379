@@ -23,7 +23,7 @@ const ReviewPage: React.FC = () => {
     goals, 
     members, 
     getGoalById, 
-    updateGoal,
+    saveReview,
     getMemberById
   } = useGoalStore();
   
@@ -37,6 +37,15 @@ const ReviewPage: React.FC = () => {
   const goal = useMemo(() => {
     return getGoalById(goalId);
   }, [goals, goalId]);
+  
+  React.useEffect(() => {
+    if (goal?.review) {
+      setSummary(goal.review.summary);
+      setHighlights(goal.review.highlights);
+      setImprovements(goal.review.improvements);
+      setPhotos(goal.review.photos || []);
+    }
+  }, [goal?.review?.id]);
   
   const contributions = useMemo<ContributionWithMember[]>(() => {
     if (!goal) return [];
@@ -120,17 +129,11 @@ const ReviewPage: React.FC = () => {
   const handleSubmit = () => {
     if (!validateForm()) return;
     
-    const review: Review = {
-      id: Date.now().toString(),
+    saveReview(goalId, {
       summary: summary.trim(),
       highlights,
       improvements,
-      createdAt: dayjs().toISOString()
-    };
-    
-    updateGoal(goalId, {
-      status: 'completed',
-      review
+      photos
     });
     
     Taro.showToast({
@@ -224,6 +227,30 @@ const ReviewPage: React.FC = () => {
           <Text className={styles.reviewDate}>
             复盘时间：{dayjs(goal.review.createdAt).format('YYYY-MM-DD HH:mm')}
           </Text>
+          
+          {goal.review.photos && goal.review.photos.length > 0 && (
+            <View className={styles.reviewPhotosSection}>
+              <Text className={styles.reviewSectionLabel}>
+                <Text>📷</Text> 照片凭证
+              </Text>
+              <View className={styles.reviewPhotosGrid}>
+                {goal.review.photos.map((photo, index) => (
+                  <Image
+                    key={index}
+                    className={styles.reviewPhoto}
+                    src={photo}
+                    mode='aspectFill'
+                    onClick={() => {
+                      Taro.previewImage({
+                        urls: goal.review?.photos || [],
+                        current: photo
+                      });
+                    }}
+                  />
+                ))}
+              </View>
+            </View>
+          )}
         </View>
         
         <View className={styles.memberContributionCard}>

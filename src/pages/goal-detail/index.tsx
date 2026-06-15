@@ -8,6 +8,7 @@ import styles from './index.module.scss';
 import { useGoalStore } from '@/store/useGoalStore';
 import TaskItem from '@/components/TaskItem';
 import { categoryLabels, statusLabels, memberNameById, memberAvatarById } from '@/data/mockData';
+import type { Reward } from '@/types';
 
 const GoalDetailPage: React.FC = () => {
   const router = useRouter();
@@ -21,11 +22,20 @@ const GoalDetailPage: React.FC = () => {
     getMemberById,
     toggleTaskStatus,
     addComment,
-    updateReward
+    addReward,
+    updateReward,
+    deleteReward,
+    toggleRewardAchieved
   } = useGoalStore();
   
   const [activeTab, setActiveTab] = useState<'tasks' | 'info' | 'expense' | 'reward' | 'comment'>('tasks');
   const [commentText, setCommentText] = useState('');
+  
+  const [rewardModalVisible, setRewardModalVisible] = useState(false);
+  const [editingReward, setEditingReward] = useState<Reward | null>(null);
+  const [rewardTitle, setRewardTitle] = useState('');
+  const [rewardCondition, setRewardCondition] = useState('');
+  const [rewardDescription, setRewardDescription] = useState('');
   
   const goal = useMemo(() => {
     return getGoalById(goalId);
@@ -65,10 +75,62 @@ const GoalDetailPage: React.FC = () => {
   };
   
   const handleAddReward = () => {
-    Taro.showToast({
-      title: '添加奖励功能开发中',
-      icon: 'none'
+    setEditingReward(null);
+    setRewardTitle('');
+    setRewardCondition('');
+    setRewardDescription('');
+    setRewardModalVisible(true);
+  };
+  
+  const handleEditReward = (reward: Reward) => {
+    setEditingReward(reward);
+    setRewardTitle(reward.title);
+    setRewardCondition(reward.condition);
+    setRewardDescription(reward.description || '');
+    setRewardModalVisible(true);
+  };
+  
+  const handleDeleteReward = (rewardId: string) => {
+    Taro.showModal({
+      title: '确认删除',
+      content: '确定要删除这个奖励吗？',
+      success: (res) => {
+        if (res.confirm) {
+          deleteReward(goalId, rewardId);
+          Taro.showToast({ title: '已删除', icon: 'success' });
+        }
+      }
     });
+  };
+  
+  const handleSaveReward = () => {
+    if (!rewardTitle.trim()) {
+      Taro.showToast({ title: '请输入奖励名称', icon: 'none' });
+      return;
+    }
+    if (!rewardCondition.trim()) {
+      Taro.showToast({ title: '请输入达成条件', icon: 'none' });
+      return;
+    }
+    
+    if (editingReward) {
+      updateReward(goalId, editingReward.id, {
+        title: rewardTitle.trim(),
+        condition: rewardCondition.trim(),
+        description: rewardDescription.trim() || undefined
+      });
+      Taro.showToast({ title: '已更新', icon: 'success' });
+    } else {
+      addReward(goalId, {
+        title: rewardTitle.trim(),
+        condition: rewardCondition.trim(),
+        description: rewardDescription.trim() || undefined,
+        achieved: false
+      });
+      Taro.showToast({ title: '添加成功', icon: 'success' });
+    }
+    
+    setRewardModalVisible(false);
   };
   
   const handleSendComment = () => {
@@ -86,8 +148,8 @@ const GoalDetailPage: React.FC = () => {
     });
   };
   
-  const handleToggleReward = (rewardId: string, achieved: boolean) => {
-    updateReward(goalId, rewardId, { achieved: !achieved });
+  const handleToggleReward = (rewardId: string) => {
+    toggleRewardAchieved(goalId, rewardId);
   };
   
   const handleCompleteGoal = () => {
@@ -362,7 +424,7 @@ const GoalDetailPage: React.FC = () => {
               <View className={styles.rewardsHeader}>
                 <Text className={styles.rewardsTitle}>阶段奖励</Text>
                 <Text className={styles.addReward} onClick={handleAddReward}>
-                  + 设置奖励
+                  + 添加奖励
                 </Text>
               </View>
               
@@ -371,19 +433,27 @@ const GoalDetailPage: React.FC = () => {
                   <View className={classnames(styles.rewardIcon, reward.achieved && styles.achieved)}>
                     <Text>{reward.achieved ? '🎁' : '🏆'}</Text>
                   </View>
-                  <View className={styles.rewardInfo}>
+                  <View className={styles.rewardInfo} onClick={() => handleEditReward(reward)}>
                     <Text className={styles.rewardTitle}>{reward.title}</Text>
                     <Text className={styles.rewardCondition}>{reward.condition}</Text>
-                  </View>
-                  <View 
-                    className={classnames(
-                      'tag', 
-                      reward.achieved ? 'tagSuccess' : 'tagWarning',
-                      styles.rewardStatus
+                    {reward.description && (
+                      <Text className={styles.rewardDesc}>{reward.description}</Text>
                     )}
-                    onClick={() => handleToggleReward(reward.id, reward.achieved)}
-                  >
-                    {reward.achieved ? '已达成' : '待达成'}
+                  </View>
+                  <View className={styles.rewardActions}>
+                    <View 
+                      className={classnames(
+                        'tag', 
+                        reward.achieved ? 'tagSuccess' : 'tagWarning',
+                        styles.rewardStatus
+                      )}
+                      onClick={() => handleToggleReward(reward.id)}
+                    >
+                      {reward.achieved ? '已达成' : '待达成'}
+                    </View>
+                    <Text className={styles.rewardDelete} onClick={() => handleDeleteReward(reward.id)}>
+                      删除
+                    </Text>
                   </View>
                 </View>
               ))}
@@ -391,7 +461,7 @@ const GoalDetailPage: React.FC = () => {
               {goal.rewards.length === 0 && (
                 <View className={styles.emptyExpenses}>
                   <Text className={styles.emptyIcon}>🎁</Text>
-                  <Text className={styles.emptyText}>暂无奖励设置</Text>
+                  <Text className={styles.emptyText}>暂无奖励设置，点击上方添加</Text>
                 </View>
               )}
             </View>
@@ -464,6 +534,69 @@ const GoalDetailPage: React.FC = () => {
           </Button>
         )}
       </View>
+      
+      {rewardModalVisible && (
+        <View className={styles.modalOverlay} onClick={() => setRewardModalVisible(false)}>
+          <View className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <View className={styles.modalHeader}>
+              <Text className={styles.modalTitle}>
+                {editingReward ? '编辑奖励' : '添加奖励'}
+              </Text>
+              <Text className={styles.modalClose} onClick={() => setRewardModalVisible(false)}>✕</Text>
+            </View>
+            
+            <View className={styles.modalBody}>
+              <View className={styles.formGroup}>
+                <Text className={styles.formLabel}>奖励名称</Text>
+                <Input
+                  className={styles.formInput}
+                  placeholder='例如：吃一顿大餐'
+                  value={rewardTitle}
+                  onInput={(e) => setRewardTitle(e.detail.value)}
+                  maxlength={30}
+                />
+              </View>
+              
+              <View className={styles.formGroup}>
+                <Text className={styles.formLabel}>达成条件</Text>
+                <Input
+                  className={styles.formInput}
+                  placeholder='例如：进度达到50%'
+                  value={rewardCondition}
+                  onInput={(e) => setRewardCondition(e.detail.value)}
+                  maxlength={50}
+                />
+              </View>
+              
+              <View className={styles.formGroup}>
+                <Text className={styles.formLabel}>详细描述（选填）</Text>
+                <Input
+                  className={styles.formInput}
+                  placeholder='奖励的具体内容或说明...'
+                  value={rewardDescription}
+                  onInput={(e) => setRewardDescription(e.detail.value)}
+                  maxlength={100}
+                />
+              </View>
+            </View>
+            
+            <View className={styles.modalFooter}>
+              <Button 
+                className={classnames(styles.modalBtn, styles.modalBtnSecondary)} 
+                onClick={() => setRewardModalVisible(false)}
+              >
+                取消
+              </Button>
+              <Button 
+                className={classnames(styles.modalBtn, styles.modalBtnPrimary)} 
+                onClick={handleSaveReward}
+              >
+                保存
+              </Button>
+            </View>
+          </View>
+        </View>
+      )}
     </ScrollView>
   );
 };

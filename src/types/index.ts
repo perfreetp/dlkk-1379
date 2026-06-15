@@ -50,6 +50,7 @@ export interface Review {
   summary: string;
   highlights: string[];
   improvements: string[];
+  photos: string[];
   createdAt: string;
 }
 

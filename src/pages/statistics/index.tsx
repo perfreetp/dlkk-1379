@@ -92,7 +92,8 @@ const StatisticsPage: React.FC = () => {
   };
   
   const handleExport = () => {
-    const csvContent = useGoalStore.getState().exportGoals();
+    const { downloadCSV } = useGoalStore.getState();
+    downloadCSV();
     console.log('[StatisticsPage] Exported goals CSV');
     Taro.showToast({
       title: '导出成功',

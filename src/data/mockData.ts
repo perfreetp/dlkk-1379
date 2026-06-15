@@ -588,6 +588,7 @@ export const mockGoals: Goal[] = [
       summary: '这次大扫除全家配合得很好，效率很高！',
       highlights: ['大家分工明确', '提前完成了任务', '家里焕然一新'],
       improvements: ['可以准备更好的清洁工具', '下次可以分两天进行，不要太累'],
+      photos: [],
       createdAt: '2026-05-31'
     },
     createdAt: '2026-05-01',

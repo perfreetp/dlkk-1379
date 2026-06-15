@@ -13,7 +13,9 @@ const MinePage: React.FC = () => {
     currentUserId, 
     getMemberById, 
     getGoalsByMember,
-    exportGoals 
+    downloadCSV,
+    copyToClipboard,
+    resetToMockData
   } = useGoalStore();
   
   const currentUser = getMemberById(currentUserId);
@@ -56,11 +58,43 @@ const MinePage: React.FC = () => {
   }, [goals, members]);
   
   const handleExport = () => {
-    const csvContent = exportGoals();
-    console.log('[MinePage] Exported goals CSV');
-    Taro.showToast({
-      title: '导出成功',
-      icon: 'success'
+    Taro.showActionSheet({
+      itemList: ['下载 CSV 文件', '复制到剪贴板'],
+      success: async (res) => {
+        if (res.tapIndex === 0) {
+          try {
+            downloadCSV();
+            Taro.showToast({ title: '下载成功', icon: 'success' });
+          } catch (e) {
+            Taro.showToast({ title: '下载失败', icon: 'none' });
+          }
+        } else if (res.tapIndex === 1) {
+          try {
+            const success = await copyToClipboard();
+            if (success) {
+              Taro.showToast({ title: '已复制到剪贴板', icon: 'success' });
+            } else {
+              Taro.showToast({ title: '复制失败', icon: 'none' });
+            }
+          } catch (e) {
+            Taro.showToast({ title: '复制失败', icon: 'none' });
+          }
+        }
+      }
+    });
+  };
+  
+  const handleResetData = () => {
+    Taro.showModal({
+      title: '重置数据',
+      content: '确定要清空所有数据并恢复到示例数据吗？此操作不可撤销。',
+      confirmColor: '#F53F3F',
+      success: (res) => {
+        if (res.confirm) {
+          resetToMockData();
+          Taro.showToast({ title: '已重置为示例数据', icon: 'success' });
+        }
+      }
     });
   };
   
@@ -123,6 +157,12 @@ const MinePage: React.FC = () => {
       iconClass: 'info',
       title: '设置',
       onClick: handleGoToSettings
+    },
+    {
+      icon: '🔄',
+      iconClass: 'danger',
+      title: '重置为示例数据',
+      onClick: handleResetData
     }
   ];
   
